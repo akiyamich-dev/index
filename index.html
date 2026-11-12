@@ -1,0 +1,3882 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SQWIZZY — Autumn Edition</title>
+
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            autumn: {
+              50: '#fdf8f6',
+              100: '#fbe8e1',
+              200: '#f5d3c4',
+              300: '#ecb196',
+              400: '#e0835b',
+              500: '#d96130',
+              600: '#c4481b',
+              700: '#a33816',
+              800: '#832f17',
+              900: '#6a2917',
+              950: '#38120a'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* =========================================================
+       AUTUMN ATMOSPHERIC THEME & GLASSMORPHISM CARDS
+       ========================================================= */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    input, textarea {
+      user-select: text;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #3a1b0f 0%, #1c1110 50%, #0d080a 100%);
+      color: #fceee9;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #190f0c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #a33816;
+      border-radius: 9999px;
+    }
+
+    .tg-card {
+      background: rgba(43, 24, 18, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(245, 131, 60, 0.22);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .tg-elevated {
+      background: rgba(61, 34, 25, 0.75);
+      border: 1px solid rgba(251, 191, 36, 0.18);
+    }
+
+    .tg-bar {
+      background-color: rgba(28, 16, 12, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-color: rgba(245, 131, 60, 0.22);
+    }
+
+    /* Falling Autumn Leaves Layer */
+    @keyframes leafFall {
+      0% {
+        transform: translate3d(0, -10vh, 0) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.88;
+      }
+      50% {
+        transform: translate3d(var(--sway, 36px), 52vh, 0) rotate(210deg);
+      }
+      85% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translate3d(calc(var(--sway, 36px) * -0.7), 108vh, 0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .autumn-leaf {
+      position: fixed;
+      top: -45px;
+      pointer-events: none;
+      z-index: 5;
+      animation: leafFall var(--dur, 13s) linear infinite;
+      animation-delay: var(--delay, 0s);
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+    }
+
+    /* =========================================================
+       PROFILE COVER PRESETS (AUTUMN & GOLD)
+       ========================================================= */
+    .cover-midnight {
+      background: linear-gradient(135deg, #4a1c10 0%, #1f1210 100%);
+    }
+    .cover-emerald {
+      background: linear-gradient(135deg, #184e3b 0%, #152219 100%);
+    }
+    .cover-crimson {
+      background: linear-gradient(135deg, #8c2814 0%, #2c1214 100%);
+    }
+    .cover-vip-gold {
+      background: linear-gradient(125deg, #a85507 0%, #f59e0b 52%, #78350f 100%);
+    }
+
+    /* =========================================================
+       ANIMATED AVATAR FRAMES
+       ========================================================= */
+    .frame-standard {
+      padding: 2.5px;
+      background: #78350f;
+    }
+    .frame-emerald {
+      padding: 3px;
+      background: linear-gradient(135deg, #10b981, #059669, #34d399);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+    }
+    .frame-gold {
+      padding: 3px;
+      background: conic-gradient(from 0deg, #f59e0b, #fde047, #d97706, #f59e0b);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.6);
+      animation: spinFrame 5s linear infinite;
+    }
+    .frame-gold > .avatar-core {
+      animation: counterSpinFrame 5s linear infinite;
+    }
+    .frame-pulse {
+      padding: 3px;
+      background: linear-gradient(135deg, #f97316, #ea580c, #fbbf24);
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.5);
+      animation: pulseRing 2.2s ease-in-out infinite;
+    }
+    .frame-crimson {
+      padding: 3px;
+      background: conic-gradient(from 0deg, #ef4444, #f97316, #991b1b, #ef4444);
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
+      animation: spinFrame 4s linear infinite;
+    }
+    .frame-crimson > .avatar-core {
+      animation: counterSpinFrame 4s linear infinite;
+    }
+
+    @keyframes spinFrame {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes counterSpinFrame {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+    @keyframes pulseRing {
+      0%, 100% { box-shadow: 0 0 10px rgba(249, 115, 22, 0.4); }
+      50% { box-shadow: 0 0 22px rgba(249, 115, 22, 0.8); }
+    }
+
+    /* =========================================================
+       BADGE VECTOR MICRO-ANIMATIONS
+       ========================================================= */
+    @keyframes badgeFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+    .badge-float {
+      animation: badgeFloat 2.4s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+    .badge-pulse {
+      transform-origin: center;
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes badgeSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .badge-spin {
+      transform-origin: center;
+      animation: badgeSpin 7s linear infinite;
+    }
+
+    /* =========================================================
+       2.5D ILLUSTRATED AUTUMN FARM GAME STYLES
+       ========================================================= */
+    .farm-world {
+      background: linear-gradient(180deg, #e0835b 0%, #f6c19f 22%, #587b27 22.5%, #38521a 100%);
+      border: 3px solid #78350f;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes cloudDrift {
+      0% { transform: translateX(-35px); }
+      50% { transform: translateX(30px); }
+      100% { transform: translateX(-35px); }
+    }
+    .farm-cloud-1 {
+      animation: cloudDrift 16s ease-in-out infinite;
+    }
+    .farm-cloud-2 {
+      animation: cloudDrift 22s ease-in-out infinite reverse;
+    }
+
+    .wood-fence-top {
+      background: repeating-linear-gradient(
+        90deg,
+        #8c4a22 0px,
+        #8c4a22 24px,
+        #5e2e13 24px,
+        #5e2e13 28px
+      );
+      border-top: 2px solid #b45309;
+      border-bottom: 2px solid #3d1a0a;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.35);
+    }
+
+    @keyframes barnBounce {
+      0%, 100% { transform: scale(1, 1); }
+      30% { transform: scale(1.14, 0.88); }
+      60% { transform: scale(0.94, 1.08); }
+    }
+    .barn-bounce {
+      animation: barnBounce 0.45s ease-out;
+    }
+
+    @keyframes chickenStroll {
+      0%   { left: 8%; transform: scaleX(1) translateY(0); }
+      20%  { left: 26%; transform: scaleX(1) translateY(-2px); }
+      25%  { left: 28%; transform: scaleX(1) rotate(18deg) translateY(2px); }
+      30%  { left: 28%; transform: scaleX(1) rotate(0deg) translateY(0); }
+      50%  { left: 52%; transform: scaleX(-1) translateY(0); }
+      72%  { left: 22%; transform: scaleX(-1) translateY(-2px); }
+      78%  { left: 20%; transform: scaleX(-1) rotate(18deg) translateY(2px); }
+      84%  { left: 20%; transform: scaleX(-1) rotate(0deg) translateY(0); }
+      100% { left: 8%; transform: scaleX(1) translateY(0); }
+    }
+    .farm-chicken {
+      position: absolute;
+      animation: chickenStroll 14s ease-in-out infinite;
+    }
+
+    .soil-bed {
+      border-radius: 16px;
+      border: 3px solid #522813;
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4), 0 4px 0 #31170a;
+      transition: background 0.5s ease, transform 0.15s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    .soil-dry {
+      background:
+        repeating-linear-gradient(
+          180deg,
+          #965831 0px,
+          #965831 9px,
+          #733f1f 9px,
+          #733f1f 14px
+        );
+    }
+    .soil-wet {
+      background:
+        repeating-linear-gradient(
+          180deg,
+          #542a12 0px,
+          #542a12 9px,
+          #381b0a 9px,
+          #381b0a 14px
+        );
+    }
+    .soil-locked {
+      background: repeating-linear-gradient(
+        135deg,
+        rgba(56, 82, 26, 0.88) 0px,
+        rgba(56, 82, 26, 0.88) 10px,
+        rgba(43, 64, 19, 0.88) 10px,
+        rgba(43, 64, 19, 0.88) 20px
+      );
+      border: 2px dashed rgba(255, 255, 255, 0.35);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    @keyframes sproutSway {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .plant-sway {
+      transform-origin: bottom center;
+      animation: sproutSway 2.6s ease-in-out infinite;
+    }
+
+    @keyframes ripeBob {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-4px) scale(1.06); }
+    }
+    .plant-ripe {
+      animation: ripeBob 1.5s ease-in-out infinite;
+    }
+
+    .wood-shelf {
+      background: linear-gradient(180deg, #8a4d22 0%, #5e3113 100%);
+      border: 2px solid #b45309;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Tab Fade */
+    @keyframes paneEnter {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .tab-pane {
+      animation: paneEnter 0.2s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-orange-500/30 selection:text-white">
+
+  <!-- Ambient Autumn Falling Leaves Layer -->
+  <div id="autumn-leaves-layer" class="fixed inset-0 pointer-events-none overflow-hidden z-[5]"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-[75]"></canvas>
+
+  <!-- Main Mobile Shell -->
+  <div class="max-w-md mx-auto min-h-screen flex flex-col relative pb-24">
+
+    <!-- =========================================================
+         TOP STICKY HEADER
+         ========================================================= -->
+    <header class="sticky top-0 z-40 tg-bar border-b px-3.5 py-2.5">
+      <div class="flex items-center justify-between gap-2">
+        <!-- App Title + VIP Crown -->
+        <div onclick="switchTab('home')" class="flex items-center gap-2 cursor-pointer active:opacity-80">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center font-black text-amber-300 text-sm shadow">
+            🍂
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-black tracking-wide text-base text-white">SQWIZZY</span>
+            <span id="header-vip-badge" class="hidden inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[10px]">
+              👑 VIP
+            </span>
+          </div>
+        </div>
+
+        <!-- Language Switcher (RU / UA) -->
+        <button onclick="toggleLanguage()" class="px-2.5 py-1.5 rounded-xl tg-elevated hover:bg-orange-950/50 text-xs font-bold text-slate-100 flex items-center gap-1.5 active:scale-95 transition">
+          <span id="lang-flag">🇷🇺</span>
+          <span id="lang-code">RU</span>
+        </button>
+      </div>
+
+      <!-- Clickable Wallet Pills (SC, Фишки, Stars) -->
+      <div class="grid grid-cols-3 gap-1.5 mt-2.5">
+        <button onclick="openWalletModal()" class="flex items-center justify-between tg-card hover:bg-orange-950/50 rounded-xl px-2.5 py-1.5 transition active:scale-95">
+          <span class="text-[11px] text-amber-200/80 font-medium">💰 SC</span>
+          <span id="hdr-sc" class="font-mono font-extrabold text-xs text-amber-400">150</span>
+        </button>
+
+        <button onclick="openWalletModal()" class="flex items-center justify-between tg-card hover:bg-orange-950/50 rounded-xl px-2.5 py-1.5 transition active:scale-95">
+          <span class="text-[11px] text-orange-200/80 font-medium" data-i18n="pill_chips">🎰 Фишки</span>
+          <span id="hdr-chips" class="font-mono font-extrabold text-xs text-orange-400">50</span>
+        </button>
+
+        <button onclick="openWalletModal()" class="flex items-center justify-between bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/30 rounded-xl px-2.5 py-1.5 transition active:scale-95">
+          <span class="text-[11px] text-amber-200 font-medium">⭐ Stars</span>
+          <span id="hdr-stars" class="font-mono font-extrabold text-xs text-amber-300">25</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- =========================================================
+         MAIN CONTENT AREA (5 TABS)
+         ========================================================= -->
+    <main class="flex-1 px-3.5 pt-3.5 space-y-3.5">
+
+      <!-- =======================================================
+           TAB 1: 🏠 ГЛАВНОЕ МЕНЮ (MAIN MENU)
+           ======================================================= -->
+      <section id="tab-home" class="tab-pane space-y-3.5">
+
+        <!-- Hero VIP Banner (Autumn Themed) -->
+        <div class="tg-card rounded-2xl p-4 border-amber-400/40 relative overflow-hidden bg-gradient-to-br from-[#3d1a0ea6] via-[#28120be8] to-[#1a0b07] shadow-xl">
+          <div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-orange-500/10 blur-xl pointer-events-none"></div>
+          <div class="flex items-start justify-between gap-3 relative z-10">
+            <div>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-400/20 border border-amber-400/40 text-[10px] font-extrabold text-amber-300 uppercase">
+                🍁 Sqwizzy Autumn VIP
+              </span>
+              <h1 id="home-hero-title" class="text-base font-black text-white mt-1.5">
+                Премиум статус • 150 ₴ / мес
+              </h1>
+              <p id="home-hero-sub" class="text-xs text-orange-200/90 mt-1 leading-relaxed">
+                Бонус +250 SC и +100 🎰, своя обложка (Фото/GIF), +25% на ферме и сбор SC каждые 2 часа.
+              </p>
+            </div>
+            <div class="w-11 h-11 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-2xl shrink-0 shadow">
+              👑
+            </div>
+          </div>
+
+          <div class="mt-3 flex items-center gap-2 relative z-10">
+            <button onclick="openDonateModal()" class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-950 font-extrabold text-xs active:scale-[0.98] transition shadow-lg">
+              <span id="home-vip-btn-text">Открыть VIP и Донат (150 ₴ / 100 ⭐)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Daily / 4-Hour SC Bonus Card -->
+        <div class="tg-card rounded-2xl p-3.5 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-11 h-11 rounded-xl bg-orange-500/20 border border-orange-400/35 flex items-center justify-center text-2xl shrink-0">
+              💰
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-xs font-extrabold text-white" data-i18n="daily_sc_title">Бонус Sqwizzy Coins</h2>
+                <span id="home-vip-cd-badge" class="hidden text-[9px] font-extrabold bg-amber-400/25 text-amber-300 border border-amber-400/40 px-1.5 py-0.2 rounded">
+                  VIP 2ч
+                </span>
+              </div>
+              <p id="home-sc-timer-sub" class="text-[11px] text-orange-200/80 mt-0.5">
+                Доступно каждые 4 ч • Награда +25 SC
+              </p>
+            </div>
+          </div>
+
+          <button id="home-sc-claim-btn" onclick="claimPeriodicSC()" class="shrink-0 px-3.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-extrabold text-xs active:scale-95 transition shadow">
+            +25 SC
+          </button>
+        </div>
+
+        <!-- Quick Launch Grid -->
+        <div>
+          <div class="flex items-center justify-between px-1 mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-orange-200/80" data-i18n="menu_sections_lbl">Разделы бота</span>
+            <button onclick="openWalletModal()" class="text-xs font-bold text-amber-400 hover:underline">
+              👛 <span data-i18n="open_wallet_link">Кошелёк</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <!-- Profile -->
+            <button onclick="switchTab('profile')" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-lg mb-2">👤</div>
+              <div class="text-xs font-extrabold text-white" data-i18n="nav_profile">Профиль</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_profile_desc">Аватар, обложка, бейджи</div>
+            </button>
+
+            <!-- Farm -->
+            <button onclick="switchTab('farm')" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-lg mb-2">🌾</div>
+              <div class="text-xs font-extrabold text-white" data-i18n="nav_farm">Ферма</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_farm_desc">Урожай от 30м до 9ч</div>
+            </button>
+
+            <!-- Global Leaderboard / Rating -->
+            <button onclick="openLeaderboardModal()" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95 border-amber-400/30">
+              <div class="flex items-center justify-between mb-2">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/35 flex items-center justify-center text-lg">🏆</div>
+                <span class="text-[9px] font-black bg-orange-500/25 text-orange-200 border border-orange-400/35 px-1.5 py-0.5 rounded">TOP</span>
+              </div>
+              <div class="text-xs font-extrabold text-amber-200" data-i18n="menu_rating_title">Рейтинг игроков</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_rating_desc">Топ богачей и профили</div>
+            </button>
+
+            <!-- Referral System -->
+            <button onclick="openReferralModal()" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95 border-emerald-400/30">
+              <div class="flex items-center justify-between mb-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/35 flex items-center justify-center text-lg">🤝</div>
+                <span class="text-[9px] font-black bg-emerald-400 text-slate-950 px-1.5 py-0.5 rounded">+100 SC</span>
+              </div>
+              <div class="text-xs font-extrabold text-emerald-300" data-i18n="menu_ref_title">Рефералы</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_ref_desc">Зови друзей за бонусы</div>
+            </button>
+
+            <!-- Multiplayer PvP -->
+            <button onclick="switchTab('pvp')" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-lg mb-2">⚔️</div>
+              <div class="text-xs font-extrabold text-white" data-i18n="menu_mp_title">Мультиплеер (PvP)</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_mp_desc">Кости и Орёл/Решка</div>
+            </button>
+
+            <!-- Casino & Exchange -->
+            <button onclick="switchTab('casino')" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-lg mb-2">🎰</div>
+              <div class="text-xs font-extrabold text-white" data-i18n="menu_casino_title">Казино и Обмен</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_casino_desc">Рулетка, покер, обменник</div>
+            </button>
+
+            <!-- Donate & VIP -->
+            <button onclick="openDonateModal()" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95 border-amber-400/30">
+              <div class="flex items-center justify-between mb-2">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/35 flex items-center justify-center text-lg">💎</div>
+                <span class="text-[9px] font-black bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded">VIP</span>
+              </div>
+              <div class="text-xs font-extrabold text-amber-300" data-i18n="menu_donate_title">Донат и VIP</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_donate_desc">VIP, RandomEmodj18, Stars</div>
+            </button>
+
+            <!-- Promocodes -->
+            <button onclick="openPromoModal()" class="tg-card hover:bg-orange-950/60 rounded-2xl p-3.5 text-left transition active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-lg mb-2">🎁</div>
+              <div class="text-xs font-extrabold text-white" data-i18n="menu_promo_title">Промокоды</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="menu_promo_desc">Ввести бонус-код</div>
+            </button>
+          </div>
+
+          <!-- Contact Developer Button -->
+          <button onclick="openSupportModal()" class="mt-2.5 w-full tg-card hover:bg-orange-950/50 rounded-2xl p-3.5 flex items-center justify-between transition active:scale-[0.99]">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">📩</span>
+              <div class="text-left">
+                <div class="text-xs font-extrabold text-white" data-i18n="contact_dev_title">Связаться с разработчиком</div>
+                <div class="text-[11px] text-orange-200/70" data-i18n="contact_dev_sub">Предложения, баги или сотрудничество</div>
+              </div>
+            </div>
+            <span class="text-amber-400 font-bold text-xs">→</span>
+          </button>
+        </div>
+
+        <!-- Developer Credit: Akiyama_Wizard -->
+        <div class="text-center py-2 text-[11px] text-orange-200/60">
+          <span data-i18n="dev_only_label">Разработчик:</span>
+          <span class="text-amber-300 font-semibold">Akiyama_Wizard</span>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           TAB 2: 👤 ПРОФИЛЬ / ПРОФІЛЬ
+           ======================================================= -->
+      <section id="tab-profile" class="tab-pane hidden space-y-3.5">
+
+        <!-- Social Gaming Profile Card -->
+        <div class="tg-card rounded-3xl overflow-hidden shadow-xl">
+          <!-- Cover Banner -->
+          <div id="profile-cover-box" class="h-28 w-full relative cover-midnight overflow-hidden">
+            <img id="profile-cover-img" src="" alt="Cover" class="hidden w-full h-full object-cover" onerror="this.classList.add('hidden')" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#2b1812] via-transparent to-black/30"></div>
+
+            <!-- VIP Tag on Cover -->
+            <div id="profile-cover-vip-tag" class="hidden absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-black text-[10px] shadow">
+              🍁 SQWIZZY VIP
+            </div>
+
+            <!-- Edit Profile Button -->
+            <button onclick="openProfileEditor()" class="absolute top-3 right-3 px-3 py-1.5 rounded-xl bg-slate-950/80 hover:bg-slate-950 border border-amber-400/30 text-xs font-bold text-white flex items-center gap-1.5 active:scale-95 transition shadow">
+              <span>✏️</span> <span data-i18n="edit_btn">Изменить</span>
+            </button>
+          </div>
+
+          <!-- Profile Content -->
+          <div class="px-4 pb-4 -mt-11 relative">
+            <div class="flex items-end justify-between">
+              <!-- Avatar with Animated Frame -->
+              <div onclick="openProfileEditor()" class="relative cursor-pointer">
+                <div id="profile-avatar-ring" class="w-20 h-20 rounded-full frame-standard flex items-center justify-center shadow-xl">
+                  <div id="profile-avatar-core" class="avatar-core w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-2xl font-black text-white">
+                    SQ
+                  </div>
+                </div>
+                <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-400 border-[3px] border-[#2b1812]"></span>
+              </div>
+
+              <!-- Reputation Heart Button -->
+              <button onclick="likeProfileReputation()" class="mb-1 px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-rose-200 text-xs font-extrabold flex items-center gap-1.5 active:scale-90 transition shadow">
+                <span>❤️</span>
+                <span id="profile-rep-val" class="font-mono">42</span>
+              </button>
+            </div>
+
+            <!-- Nickname + Primary RandomEmodj18 Badge + Clan Tag -->
+            <div class="mt-2.5">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h2 id="profile-name-display" class="text-lg font-black text-white">Sqwizzy_Player</h2>
+                <span id="profile-primary-badge" onclick="openBadgePickerModal()" class="cursor-pointer inline-flex items-center justify-center w-6 h-6 hover:scale-110 transition"></span>
+              </div>
+
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                <span id="profile-handle-display" class="text-xs font-mono text-orange-200/70">@sqwizzy_player</span>
+                <span id="profile-clan-display" class="text-[10px] font-mono font-extrabold text-amber-300 bg-amber-500/15 border border-amber-400/30 px-2 py-0.5 rounded">
+                  [UA]
+                </span>
+              </div>
+            </div>
+
+            <!-- Bio / Status Quote -->
+            <div class="mt-3 tg-elevated rounded-2xl p-3">
+              <div class="text-[10px] uppercase tracking-wider font-bold text-orange-200/70 mb-1" data-i18n="bio_label">О себе / Статус</div>
+              <p id="profile-bio-display" class="text-xs text-orange-100 leading-relaxed">
+                Осенний вайб, покер и уютная ферма 🍁
+              </p>
+            </div>
+
+            <!-- Badge Showcase -->
+            <div class="mt-3 tg-elevated rounded-2xl p-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] uppercase tracking-wider font-bold text-orange-200/70" data-i18n="badges_showcase_lbl">Бейджи RandomEmodj18</span>
+                <button onclick="openBadgePickerModal()" class="text-xs font-bold text-amber-400 hover:underline" data-i18n="choose_badge_btn">
+                  Выбрать →
+                </button>
+              </div>
+              <div id="profile-showcase-slots" class="grid grid-cols-3 gap-2"></div>
+            </div>
+
+            <!-- Stats 2x2 -->
+            <div class="grid grid-cols-2 gap-2 mt-3">
+              <div class="tg-elevated rounded-2xl p-3">
+                <div class="text-[10px] text-orange-200/70 font-semibold" data-i18n="stat_sc_lbl">💰 Баланс SC</div>
+                <div id="prof-stat-sc" class="font-mono font-black text-sm text-amber-400 mt-0.5">150 SC</div>
+              </div>
+              <div class="tg-elevated rounded-2xl p-3">
+                <div class="text-[10px] text-orange-200/70 font-semibold" data-i18n="stat_chips_lbl">🎰 Фишки казино</div>
+                <div id="prof-stat-chips" class="font-mono font-black text-sm text-orange-400 mt-0.5">50 🎰</div>
+              </div>
+              <div class="tg-elevated rounded-2xl p-3">
+                <div class="text-[10px] text-orange-200/70 font-semibold" data-i18n="stat_farm_lbl">🌾 Уровень фермы</div>
+                <div id="prof-stat-farm" class="font-mono font-black text-sm text-emerald-400 mt-0.5">Lvl 1 (35 XP)</div>
+              </div>
+              <div class="tg-elevated rounded-2xl p-3">
+                <div class="text-[10px] text-orange-200/70 font-semibold" data-i18n="stat_pvp_lbl">⚔️ Победы PvP</div>
+                <div id="prof-stat-pvp" class="font-mono font-black text-sm text-rose-400 mt-0.5">7</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Sticker Pack Card: RandomEmodj18 -->
+        <div class="tg-card rounded-2xl p-3.5 border-amber-400/30 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-400/35 flex items-center justify-center shrink-0" id="random18-pack-icon"></div>
+            <div class="min-w-0">
+              <div class="text-xs font-black text-white truncate">🔥 RandomEmodj18 Pack</div>
+              <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="random18_card_sub">
+                Оригинальный набор эмодзи для Telegram
+              </div>
+            </div>
+          </div>
+          <button onclick="openRandomEmodj18Telegram()" class="shrink-0 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs active:scale-95 transition shadow" data-i18n="open_tg_btn">
+            Открыть ↗
+          </button>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           TAB 3: 🌾 ВЕСЁЛАЯ ФЕРМА (TACTILE 2.5D AUTUMN GAMEPLAY)
+           ======================================================= -->
+      <section id="tab-farm" class="tab-pane hidden space-y-3">
+
+        <!-- Top Farm HUD Strip -->
+        <div class="tg-card rounded-2xl p-3 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/35 flex items-center justify-center text-xl">
+              🚜
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span id="farm-level-title" class="text-xs font-black text-white">Осенняя ферма • Ур. 1</span>
+                <span id="farm-vip-bonus-pill" class="hidden text-[9px] font-black bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded">
+                  👑 +25%
+                </span>
+              </div>
+              <div class="flex items-center gap-2 mt-1">
+                <div class="w-24 h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                  <div id="farm-xp-fill" class="h-full bg-emerald-400 rounded-full transition-all duration-300" style="width: 35%"></div>
+                </div>
+                <span id="farm-xp-lbl" class="text-[10px] font-mono text-emerald-300">35/100 XP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Open Barn Modal Button -->
+          <button onclick="openBarnModal()" class="px-3 py-2 rounded-xl bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/40 text-amber-200 font-extrabold text-xs flex items-center gap-1.5 active:scale-95 transition shadow">
+            <span>🏠</span>
+            <span data-i18n="barn_btn">Амбар</span>
+            <span id="barn-count-pill" class="bg-amber-400 text-slate-950 font-mono text-[10px] font-black px-1.5 rounded-full">3</span>
+          </button>
+        </div>
+
+        <!-- =====================================================
+             2.5D ILLUSTRATED AUTUMN FARMYARD WORLD
+             ===================================================== -->
+        <div id="farm-yard-container" class="farm-world rounded-3xl pt-2 pb-4 px-3 select-none">
+
+          <!-- SKY LAYER: Golden Autumn Sun, Clouds & Red Wooden Barn -->
+          <div class="relative h-24 flex items-end justify-between px-1 pb-1">
+            <!-- Warm Autumn Sun -->
+            <div class="absolute top-1 left-2 w-10 h-10 rounded-full bg-orange-400 shadow-[0_0_28px_#f97316] border-2 border-amber-100"></div>
+
+            <!-- Drifting Clouds -->
+            <div class="farm-cloud-1 absolute top-2 left-16 opacity-90 pointer-events-none">
+              <svg width="58" height="24" viewBox="0 0 58 24">
+                <path d="M12 22 H46 A10 10 0 0 0 44 3 A13 13 0 0 0 20 5 A9 9 0 0 0 12 22 Z" fill="#fef3c7"/>
+              </svg>
+            </div>
+            <div class="farm-cloud-2 absolute top-4 right-28 opacity-80 pointer-events-none">
+              <svg width="46" height="20" viewBox="0 0 58 24">
+                <path d="M12 22 H46 A10 10 0 0 0 44 3 A13 13 0 0 0 20 5 A9 9 0 0 0 12 22 Z" fill="#fef3c7"/>
+              </svg>
+            </div>
+
+            <!-- Meadow Signpost -->
+            <div class="relative z-10 mb-1 ml-1 bg-[#8a4d22] border-2 border-[#3d1a0a] rounded-lg px-2 py-1 shadow text-[10px] font-extrabold text-amber-100">
+              <span id="farm-active-tool-hint">🌾 Выберите семена снизу</span>
+            </div>
+
+            <!-- Cozy Red-Roofed Wooden Barn -->
+            <button id="farm-barn-target" onclick="openBarnModal()" class="relative z-10 flex flex-col items-center active:scale-95 transition cursor-pointer" title="Амбар">
+              <svg width="86" height="74" viewBox="0 0 86 74" class="drop-shadow-lg">
+                <!-- Barn Roof -->
+                <polygon points="43,4 6,30 14,34 43,14 72,34 80,30" fill="#78350f" stroke="#38120a" stroke-width="2"/>
+                <polygon points="43,12 13,33 13,70 73,70 73,33" fill="#991b1b" stroke="#450a0a" stroke-width="2"/>
+                <!-- Loft Window -->
+                <rect x="35" y="23" width="16" height="13" rx="2" fill="#381b0a" stroke="#fef3c7" stroke-width="2"/>
+                <!-- Double Barn Doors -->
+                <rect x="25" y="42" width="36" height="28" rx="2" fill="#78350f" stroke="#fef3c7" stroke-width="2.2"/>
+                <line x1="43" y1="42" x2="43" y2="70" stroke="#fef3c7" stroke-width="2"/>
+                <line x1="25" y1="42" x2="43" y2="70" stroke="#fef3c7" stroke-width="1.5"/>
+                <line x1="43" y1="42" x2="25" y2="70" stroke="#fef3c7" stroke-width="1.5"/>
+                <line x1="43" y1="42" x2="61" y2="70" stroke="#fef3c7" stroke-width="1.5"/>
+                <line x1="61" y1="42" x2="43" y2="70" stroke="#fef3c7" stroke-width="1.5"/>
+              </svg>
+              <span class="-mt-2 px-2 py-0.5 rounded-md bg-[#38120a] border border-amber-300/60 text-[9px] font-black text-amber-200 shadow" data-i18n="barn_sign">
+                АМБАР
+              </span>
+            </button>
+          </div>
+
+          <!-- Top Wooden Fence -->
+          <div class="wood-fence-top h-3.5 w-full rounded-md mb-3"></div>
+
+          <!-- 6 PLOWED SOIL BEDS (2x3 Grid) -->
+          <div id="farm-beds-grid" class="grid grid-cols-2 gap-3 relative z-10"></div>
+
+          <!-- Grass Path with Cute Strolling Farm Chicken -->
+          <div class="relative h-8 mt-2.5 overflow-hidden">
+            <div class="farm-chicken bottom-0">
+              <svg width="32" height="30" viewBox="0 0 32 30" class="drop-shadow">
+                <path d="M5 16 L2 11 L8 13 Z" fill="#fef3c7"/>
+                <ellipse cx="15" cy="18" rx="9" ry="7" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1.2"/>
+                <circle cx="22" cy="11" r="5" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1.2"/>
+                <path d="M20 6 Q22 2 24 6 Q26 3 26 7" fill="#dc2626"/>
+                <polygon points="26,11 31,12.5 26,14" fill="#f97316"/>
+                <circle cx="23.5" cy="10.5" r="1.1" fill="#0f172a"/>
+                <line x1="13" y1="24" x2="13" y2="29" stroke="#f97316" stroke-width="1.8"/>
+                <line x1="17" y1="24" x2="17" y2="29" stroke="#f97316" stroke-width="1.8"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom Wooden Fence -->
+          <div class="wood-fence-top h-3 w-full rounded-md"></div>
+        </div>
+
+        <!-- =====================================================
+             WOODEN TOOL TRAY
+             ===================================================== -->
+        <div class="wood-shelf rounded-2xl p-2.5 space-y-2">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-[11px] font-extrabold text-amber-100" data-i18n="tool_tray_title">
+              🎒 Инструменты и мешочки с семенами
+            </span>
+            <span class="text-[10px] text-amber-200/80" data-i18n="tool_tray_hint">
+              Нажмите на грядку, чтобы высыпать
+            </span>
+          </div>
+
+          <div id="farm-tool-tray" class="flex items-center gap-2 overflow-x-auto pb-1"></div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           TAB 4: ⚔️ PvP (MULTIPLAYER GAMES)
+           ======================================================= -->
+      <section id="tab-pvp" class="tab-pane hidden space-y-3.5">
+
+        <!-- Invite Friend Banner -->
+        <div class="tg-card rounded-2xl p-3.5 flex items-center justify-between gap-2 border-orange-400/30">
+          <div>
+            <div class="text-xs font-extrabold text-white" data-i18n="invite_friend_title">🤝 Пригласить друга в Telegram</div>
+            <div class="text-[11px] text-orange-200/70 mt-0.5" data-i18n="invite_friend_sub">Отправь вызов на дуэль в любой чат</div>
+          </div>
+          <button onclick="inviteTelegramFriend()" class="shrink-0 px-3 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-extrabold text-xs active:scale-95 transition shadow">
+            📲 <span data-i18n="invite_btn">Позвать</span>
+          </button>
+        </div>
+
+        <!-- 1. PvP Dice Duel (Кости) -->
+        <div class="tg-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-extrabold text-white" data-i18n="dice_title">🎲 PvP Кости</h3>
+              <p class="text-[11px] text-orange-200/70" data-i18n="dice_sub">Дуэль на фишки против соперника (x2)</p>
+            </div>
+            <span id="dice-online-pill" class="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+              ● 18 онлайн
+            </span>
+          </div>
+
+          <!-- Dice Arena -->
+          <div class="tg-elevated rounded-xl p-3 grid grid-cols-3 items-center text-center">
+            <div>
+              <div id="dice-p1-name" class="text-[11px] font-bold text-amber-300 truncate">Вы</div>
+              <div id="dice-p1-icon" class="text-3xl my-1">🎲</div>
+              <div id="dice-p1-val" class="text-xs font-mono text-orange-200/70">-</div>
+            </div>
+            <div class="text-xs font-black text-amber-400">VS</div>
+            <div>
+              <div id="dice-p2-name" class="text-[11px] font-bold text-rose-300 truncate">@Соперник</div>
+              <div id="dice-p2-icon" class="text-3xl my-1">🎲</div>
+              <div id="dice-p2-val" class="text-xs font-mono text-orange-200/70">-</div>
+            </div>
+          </div>
+
+          <!-- Chip Bet Selector -->
+          <div class="grid grid-cols-4 gap-1.5">
+            <button onclick="selectDiceBet(10)" id="dice-bet-10" class="dice-bet-btn py-2 rounded-xl bg-amber-400 text-slate-950 font-mono font-extrabold text-xs transition shadow">10 🎰</button>
+            <button onclick="selectDiceBet(25)" id="dice-bet-25" class="dice-bet-btn py-2 rounded-xl tg-elevated text-slate-200 font-mono font-bold text-xs transition">25 🎰</button>
+            <button onclick="selectDiceBet(50)" id="dice-bet-50" class="dice-bet-btn py-2 rounded-xl tg-elevated text-slate-200 font-mono font-bold text-xs transition">50 🎰</button>
+            <button onclick="selectDiceBet(100)" id="dice-bet-100" class="dice-bet-btn py-2 rounded-xl tg-elevated text-slate-200 font-mono font-bold text-xs transition">100 🎰</button>
+          </div>
+
+          <button onclick="playDiceDuel()" class="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-extrabold text-xs active:scale-[0.98] transition shadow">
+            ⚔️ <span data-i18n="dice_roll_btn">Бросить кости</span>
+          </button>
+        </div>
+
+        <!-- 2. Coinflip Rooms (Орёл и Решка) -->
+        <div class="tg-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-extrabold text-white" data-i18n="cf_title">🪙 Орёл и Решка</h3>
+              <p class="text-[11px] text-orange-200/70" data-i18n="cf_sub">Войди в комнату или создай свою (SC)</p>
+            </div>
+            <div id="cf-coin-disc" class="w-9 h-9 rounded-full bg-amber-400 text-slate-950 font-black text-base flex items-center justify-center shadow">
+              🦅
+            </div>
+          </div>
+
+          <div class="flex gap-1.5">
+            <select id="cf-side-sel" class="tg-elevated rounded-xl px-2.5 py-2 text-xs font-bold text-white outline-none">
+              <option value="heads" id="opt-heads">🦅 Орёл</option>
+              <option value="tails" id="opt-tails">🪙 Решка</option>
+            </select>
+            <input id="cf-bet-inp" type="number" min="5" value="20"
+              class="w-20 tg-elevated rounded-xl px-2.5 py-2 text-xs font-mono font-bold text-white outline-none" />
+            <button onclick="createCoinflipRoom()" class="flex-1 py-2 px-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs active:scale-95 transition shadow">
+              + <span data-i18n="cf_create">Создать</span>
+            </button>
+          </div>
+
+          <div id="cf-rooms-container" class="space-y-2"></div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           TAB 5: 🎰 КАЗИНО (ROULETTE, POKER & EXCHANGE)
+           ======================================================= -->
+      <section id="tab-casino" class="tab-pane hidden space-y-3.5">
+
+        <!-- 1. European Roulette Wheel (0-36) -->
+        <div class="tg-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-extrabold text-white" data-i18n="roulette_title">🎡 Европейская Рулетка (0–36)</h2>
+              <p class="text-[11px] text-orange-200/70" data-i18n="roulette_sub">Ставки на фишки казино</p>
+            </div>
+            <span id="roulette-status-pill" class="text-xs font-mono px-2.5 py-1 rounded-lg tg-elevated text-slate-200">
+              Готово
+            </span>
+          </div>
+
+          <!-- Rotating SVG European Wheel -->
+          <div class="relative flex items-center justify-center py-2">
+            <div class="absolute top-0 z-20 text-amber-400 text-lg drop-shadow">▼</div>
+            <div id="roulette-wheel-wrap" class="w-48 h-48 rounded-full border-4 border-amber-500/70 shadow-xl flex items-center justify-center bg-slate-950">
+              <svg id="roulette-wheel-svg" viewBox="0 0 200 200" class="w-full h-full"></svg>
+            </div>
+          </div>
+
+          <!-- Chip Bet Input -->
+          <div class="flex gap-1.5">
+            <input id="roulette-bet-inp" type="number" min="1" value="10"
+              class="w-24 tg-elevated rounded-xl px-3 py-2 text-xs font-mono font-bold text-white outline-none" />
+            <button onclick="setRouletteChipBet(10)" class="flex-1 py-2 rounded-xl tg-elevated text-xs font-mono font-bold text-slate-200 active:scale-95">10</button>
+            <button onclick="setRouletteChipBet(25)" class="flex-1 py-2 rounded-xl tg-elevated text-xs font-mono font-bold text-slate-200 active:scale-95">25</button>
+            <button onclick="setRouletteChipBet(50)" class="flex-1 py-2 rounded-xl tg-elevated text-xs font-mono font-bold text-slate-200 active:scale-95">50</button>
+            <button onclick="setRouletteChipBet('MAX')" class="flex-1 py-2 rounded-xl bg-amber-400/20 border border-amber-400/35 text-xs font-mono font-bold text-amber-300 active:scale-95">MAX</button>
+          </div>
+
+          <!-- Color Bet Buttons -->
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="spinEuropeanWheel('red')" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs active:scale-95 transition shadow">
+              🔴 <span data-i18n="bet_red">Красное</span> (x2)
+            </button>
+            <button onclick="spinEuropeanWheel('black')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-extrabold text-xs active:scale-95 transition shadow">
+              ⬛ <span data-i18n="bet_black">Чёрное</span> (x2)
+            </button>
+            <button onclick="spinEuropeanWheel('green')" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs active:scale-95 transition shadow">
+              🟩 Zero (x14)
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Texas Hold'em Poker Table -->
+        <div class="rounded-2xl p-4 bg-[#211410] border border-orange-500/35 space-y-3 shadow-lg">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-extrabold text-white" data-i18n="poker_title">♠️ Техасский Холдем</h3>
+              <p class="text-[11px] text-orange-200/80" data-i18n="poker_sub">Вход: 50 🎰 • Выигрыш: 150 🎰</p>
+            </div>
+            <span id="poker-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-orange-500/20 text-orange-200 border border-orange-400/30">
+              СТОЛ
+            </span>
+          </div>
+
+          <!-- Community Cards -->
+          <div class="bg-black/30 rounded-xl p-3 space-y-2">
+            <div class="flex justify-between text-[11px] text-orange-200/80">
+              <span data-i18n="poker_community">Карты на столе</span>
+              <span id="poker-pot-lbl" class="font-mono font-bold text-amber-300">Банк: 150 🎰</span>
+            </div>
+            <div id="poker-board-cards" class="flex gap-1.5">
+              <div class="w-9 h-11 rounded-lg bg-slate-900 border border-white/15 flex items-center justify-center text-sm">🎴</div>
+              <div class="w-9 h-11 rounded-lg bg-slate-900 border border-white/15 flex items-center justify-center text-sm">🎴</div>
+              <div class="w-9 h-11 rounded-lg bg-slate-900 border border-white/15 flex items-center justify-center text-sm">🎴</div>
+              <div class="w-9 h-11 rounded-lg bg-slate-900 border border-white/15 flex items-center justify-center text-sm">🎴</div>
+              <div class="w-9 h-11 rounded-lg bg-slate-900 border border-white/15 flex items-center justify-center text-sm">🎴</div>
+            </div>
+
+            <!-- Player Hole Cards -->
+            <div id="poker-hand-area" class="hidden pt-2 border-t border-white/10 flex items-center justify-between">
+              <div>
+                <div class="text-[10px] text-orange-200/70 mb-1" data-i18n="poker_your_cards">Ваши карты</div>
+                <div id="poker-hole-cards" class="flex gap-1.5"></div>
+              </div>
+              <span id="poker-hand-label" class="text-xs font-extrabold text-amber-300 bg-amber-500/20 border border-amber-400/35 px-2.5 py-1 rounded-lg">
+                Пара тузов
+              </span>
+            </div>
+          </div>
+
+          <div id="poker-action-box">
+            <button onclick="startPokerHand()" class="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-extrabold text-xs active:scale-[0.98] transition shadow">
+              🃏 <span data-i18n="poker_deal_btn">Раздать карты (50 🎰)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Currency Exchange (SC <-> Фишки) -->
+        <div class="tg-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-extrabold text-white" data-i18n="exch_title">🏦 Обменник SC ⇄ Фишки</h3>
+            <span class="text-[11px] font-mono text-amber-300">1 SC = 2 🎰</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-1.5 tg-elevated p-1 rounded-xl">
+            <button id="exch-btn-buy" onclick="setExchDirection('buy')" class="py-1.5 rounded-lg text-xs font-extrabold bg-amber-400 text-slate-950 transition" data-i18n="exch_sc_to_chips">
+              SC → Фишки
+            </button>
+            <button id="exch-btn-sell" onclick="setExchDirection('sell')" class="py-1.5 rounded-lg text-xs font-bold text-slate-300 transition" data-i18n="exch_chips_to_sc">
+              Фишки → SC
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <input id="exch-amount-inp" type="number" min="1" value="10" oninput="refreshExchPreview()"
+              class="flex-1 tg-elevated rounded-xl px-3 py-2 text-xs font-mono font-bold text-white outline-none" />
+            <button onclick="quickExchAmount(10)" class="px-3 py-2 rounded-xl tg-elevated text-xs font-mono text-slate-200">10</button>
+            <button onclick="quickExchAmount(50)" class="px-3 py-2 rounded-xl tg-elevated text-xs font-mono text-slate-200">50</button>
+          </div>
+
+          <div class="flex items-center justify-between text-xs tg-elevated rounded-xl px-3 py-2">
+            <span class="text-orange-200/70" data-i18n="exch_result_lbl">Получите:</span>
+            <span id="exch-preview-lbl" class="font-mono font-extrabold text-emerald-400">+20 🎰</span>
+          </div>
+
+          <button onclick="runCurrencyExchange()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs active:scale-[0.98] transition shadow">
+            🔄 <span data-i18n="exch_submit_btn">Обменять</span>
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- =========================================================
+         FIXED BOTTOM NAVIGATION BAR (5 TABS)
+         ========================================================= -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40">
+      <div class="max-w-md mx-auto tg-bar border-t px-1.5 py-2 grid grid-cols-5 gap-1">
+        <button onclick="switchTab('home')" id="nav-home" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition text-amber-400 bg-white/[0.08]">
+          <span class="nav-dot absolute -top-2 w-7 h-1 rounded-full bg-amber-400"></span>
+          <span class="text-base leading-none">🏠</span>
+          <span class="text-[10px] font-bold mt-1" data-i18n="nav_home">Меню</span>
+        </button>
+
+        <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition text-orange-200/70">
+          <span class="nav-dot hidden absolute -top-2 w-7 h-1 rounded-full bg-amber-400"></span>
+          <span class="text-base leading-none">👤</span>
+          <span class="text-[10px] font-semibold mt-1" data-i18n="nav_profile">Профиль</span>
+        </button>
+
+        <button onclick="switchTab('farm')" id="nav-farm" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition text-orange-200/70">
+          <span class="nav-dot hidden absolute -top-2 w-7 h-1 rounded-full bg-emerald-400"></span>
+          <span class="text-base leading-none">🌾</span>
+          <span class="text-[10px] font-semibold mt-1" data-i18n="nav_farm">Ферма</span>
+        </button>
+
+        <button onclick="switchTab('pvp')" id="nav-pvp" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition text-orange-200/70">
+          <span class="nav-dot hidden absolute -top-2 w-7 h-1 rounded-full bg-rose-400"></span>
+          <span class="text-base leading-none">⚔️</span>
+          <span class="text-[10px] font-semibold mt-1">PvP</span>
+        </button>
+
+        <button onclick="switchTab('casino')" id="nav-casino" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition text-orange-200/70">
+          <span class="nav-dot hidden absolute -top-2 w-7 h-1 rounded-full bg-orange-400"></span>
+          <span class="text-base leading-none">🎰</span>
+          <span class="text-[10px] font-semibold mt-1" data-i18n="nav_casino">Казино</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- =========================================================
+         MODALS
+         ========================================================= -->
+
+    <!-- 1. WALLET MODAL -->
+    <div id="wallet-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3.5 shadow-2xl tab-pane max-h-[88vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-black text-white">👛 <span data-i18n="wallet_title">Кошелёк Sqwizzy</span></h3>
+          <button onclick="closeModal('wallet-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div class="tg-elevated rounded-xl p-2.5 text-center">
+            <div class="text-base">💰</div>
+            <div id="wm-sc-val" class="font-mono font-extrabold text-sm text-amber-400 mt-0.5">150</div>
+            <div class="text-[10px] text-orange-200/70">SC</div>
+          </div>
+          <div class="tg-elevated rounded-xl p-2.5 text-center">
+            <div class="text-base">🎰</div>
+            <div id="wm-chips-val" class="font-mono font-extrabold text-sm text-orange-400 mt-0.5">50</div>
+            <div class="text-[10px] text-orange-200/70" data-i18n="chips_word">Фишки</div>
+          </div>
+          <div class="bg-amber-500/15 border border-amber-400/30 rounded-xl p-2.5 text-center">
+            <div class="text-base">⭐</div>
+            <div id="wm-stars-val" class="font-mono font-extrabold text-sm text-amber-300 mt-0.5">25</div>
+            <div class="text-[10px] text-amber-200/80">Stars</div>
+          </div>
+        </div>
+
+        <!-- Quick Stars Top-Up -->
+        <div class="tg-elevated rounded-xl p-3 space-y-2">
+          <div class="text-xs font-extrabold text-white" data-i18n="topup_stars_lbl">⭐ Пополнить Telegram Stars</div>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="addTelegramStars(50)" class="py-2 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/35 text-xs font-mono font-extrabold text-amber-200 active:scale-95">+50 ⭐</button>
+            <button onclick="addTelegramStars(100)" class="py-2 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/35 text-xs font-mono font-extrabold text-amber-200 active:scale-95">+100 ⭐</button>
+            <button onclick="addTelegramStars(250)" class="py-2 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/35 text-xs font-mono font-extrabold text-amber-200 active:scale-95">+250 ⭐</button>
+          </div>
+        </div>
+
+        <!-- Quick SC -> Chips Converter -->
+        <div class="tg-elevated rounded-xl p-3 flex items-center justify-between gap-2">
+          <div>
+            <div class="text-xs font-bold text-white" data-i18n="quick_conv_lbl">Быстрый обмен: 10 SC → 20 🎰</div>
+            <div class="text-[10px] text-orange-200/70" data-i18n="quick_conv_sub">Мгновенно для игр в PvP и Казино</div>
+          </div>
+          <button onclick="quickConvert10SC()" class="px-3 py-2 rounded-xl bg-orange-500 text-slate-950 font-extrabold text-xs active:scale-95 shadow">
+            +20 🎰
+          </button>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="space-y-1.5">
+          <div class="text-[11px] font-bold text-orange-200/70 uppercase" data-i18n="tx_log_title">Последние операции</div>
+          <div id="wallet-tx-list" class="space-y-1.5 max-h-32 overflow-y-auto text-xs"></div>
+        </div>
+
+        <button onclick="closeModal('wallet-modal'); openDonateModal()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-extrabold text-xs active:scale-95 shadow">
+          👑 <span data-i18n="go_vip_store_btn">Открыть VIP и Донат магазин</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. DONATE & VIP STORE MODAL -->
+    <div id="donate-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3.5 shadow-2xl tab-pane max-h-[90vh] overflow-y-auto border-amber-400/35">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-black text-white">💎 <span data-i18n="donate_title">Донат и Sqwizzy VIP</span></h3>
+          <button onclick="closeModal('donate-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+
+        <!-- Balance Strip -->
+        <div class="tg-elevated rounded-xl px-3 py-2 flex items-center justify-between text-xs">
+          <span class="text-orange-200/70" data-i18n="balance_lbl">Баланс:</span>
+          <div class="font-mono font-extrabold flex items-center gap-2.5">
+            <span class="text-amber-400" id="dm-sc-txt">150 SC</span>
+            <span class="text-orange-400" id="dm-chips-txt">50 🎰</span>
+            <span class="text-amber-300" id="dm-stars-txt">25 ⭐</span>
+          </div>
+        </div>
+
+        <!-- ITEM 1: SQWIZZY VIP -->
+        <div class="rounded-2xl p-4 bg-[#381a10] border border-amber-400/50 space-y-3 shadow-lg">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-black text-[10px]">
+                🍁 VIP • 30 ДНЕЙ
+              </span>
+              <h4 class="text-base font-black text-white mt-1">Sqwizzy Autumn VIP</h4>
+              <p id="vip-status-desc" class="text-[11px] text-amber-200/85">Полный доступ к VIP-функциям</p>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-base font-black font-mono text-amber-300">150 ₴</div>
+              <div class="text-xs font-mono font-bold text-amber-200" data-i18n="or_100_stars">или 100 ⭐</div>
+            </div>
+          </div>
+
+          <ul class="space-y-1.5 text-xs text-orange-100 bg-black/35 rounded-xl p-3 border border-amber-400/20">
+            <li>💰 <span data-i18n="vip_b1">Бонус при активации: +250 SC и +100 🎰 Фишек</span></li>
+            <li>🖼️ <span data-i18n="vip_b2">Своя обложка профиля (загрузка Фото или GIF)</span></li>
+            <li>✨ <span data-i18n="vip_b3">Эксклюзивные VIP-рамки аватара</span></li>
+            <li>🌾 <span data-i18n="vip_b4">+25% к продаже урожая и сбор SC каждые 2 часа</span></li>
+          </ul>
+
+          <div id="vip-buy-buttons" class="grid grid-cols-2 gap-2">
+            <button onclick="openCheckout('vip_month', 'stars')" class="py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs active:scale-95 shadow">
+              ⭐ 100 Stars
+            </button>
+            <button onclick="openCheckout('vip_month', 'card')" class="py-2.5 rounded-xl tg-elevated hover:bg-orange-950/60 border border-amber-400/40 text-white font-extrabold text-xs active:scale-95 shadow">
+              💳 150 ₴ (Карта)
+            </button>
+          </div>
+        </div>
+
+        <!-- ITEM 2: STICKER PACK "RandomEmodj18" -->
+        <div class="tg-elevated rounded-2xl p-3.5 space-y-2.5 border-amber-400/30">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="text-xs font-black text-white">🔥 <span data-i18n="pack_random18_title">Пак стикеров «RandomEmodj18»</span></div>
+              <div class="text-[11px] text-orange-200/80 mt-0.5" data-i18n="pack_random18_sub">
+                Открывает все 12 анимированных бейджей из пака — ставь любой в профиль!
+              </div>
+            </div>
+            <div class="text-right shrink-0 font-mono">
+              <div class="text-xs font-black text-amber-300">75 ₴</div>
+              <div class="text-[10px] text-orange-200/70">50 ⭐</div>
+            </div>
+          </div>
+
+          <div id="random18-buy-buttons" class="grid grid-cols-2 gap-2">
+            <button onclick="openCheckout('random18_pack', 'stars')" class="py-2 rounded-xl bg-amber-400/20 border border-amber-400/40 text-amber-200 font-extrabold text-xs active:scale-95">
+              ⭐ 50 Stars
+            </button>
+            <button onclick="openCheckout('random18_pack', 'card')" class="py-2 rounded-xl bg-slate-900 border border-white/15 text-white font-extrabold text-xs active:scale-95">
+              💳 75 ₴
+            </button>
+          </div>
+
+          <button onclick="openRandomEmodj18Telegram()" class="w-full py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-bold text-amber-300 transition">
+            📲 <span data-i18n="view_pack_tg">Посмотреть стикерпак в Telegram ↗</span>
+          </button>
+        </div>
+
+        <!-- ITEM 3: SC TOP-UP PACKS -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="tg-elevated rounded-2xl p-2.5 text-center space-y-1.5">
+            <div class="text-base">🪙</div>
+            <div class="text-xs font-black text-amber-400">+150 SC</div>
+            <button onclick="openCheckout('sc_150', 'stars')" class="w-full py-1 rounded-lg bg-amber-400/20 text-[10px] font-bold text-amber-200">⭐ 15</button>
+            <button onclick="openCheckout('sc_150', 'card')" class="w-full py-1 rounded-lg bg-slate-900 text-[10px] font-bold text-white">💳 25 ₴</button>
+          </div>
+          <div class="tg-elevated rounded-2xl p-2.5 text-center space-y-1.5">
+            <div class="text-base">💰</div>
+            <div class="text-xs font-black text-amber-400">+500 SC</div>
+            <button onclick="openCheckout('sc_500', 'stars')" class="w-full py-1 rounded-lg bg-amber-400/20 text-[10px] font-bold text-amber-200">⭐ 45</button>
+            <button onclick="openCheckout('sc_500', 'card')" class="w-full py-1 rounded-lg bg-slate-900 text-[10px] font-bold text-white">💳 75 ₴</button>
+          </div>
+          <div class="tg-elevated rounded-2xl p-2.5 text-center space-y-1.5">
+            <div class="text-base">💎</div>
+            <div class="text-xs font-black text-amber-400">+1500 SC</div>
+            <button onclick="openCheckout('sc_1500', 'stars')" class="w-full py-1 rounded-lg bg-amber-400/20 text-[10px] font-bold text-amber-200">⭐ 120</button>
+            <button onclick="openCheckout('sc_1500', 'card')" class="w-full py-1 rounded-lg bg-slate-900 text-[10px] font-bold text-white">💳 190 ₴</button>
+          </div>
+        </div>
+
+        <!-- DIRECT CARD / MONOBANK JAR -->
+        <div class="tg-elevated rounded-2xl p-3 space-y-2">
+          <div class="text-xs font-extrabold text-white" data-i18n="direct_card_title">☕ Прямая поддержка на карту / Банку</div>
+          <div class="flex items-center justify-between bg-slate-950 rounded-xl px-3 py-2 border border-white/10">
+            <span class="font-mono font-bold text-xs text-white">4874 0700 6225 9666</span>
+            <button onclick="copyCardToClipboard()" class="px-2.5 py-1 rounded-lg bg-amber-400/20 text-amber-200 text-xs font-bold active:scale-95">
+              📋 <span data-i18n="copy_word">Копия</span>
+            </button>
+          </div>
+          <button onclick="openMonobankLink()" class="w-full py-2 rounded-xl bg-white text-slate-950 font-extrabold text-xs active:scale-95 shadow">
+            🫙 <span data-i18n="open_mono_btn">Открыть Банку Monobank</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CHECKOUT MODAL -->
+    <div id="checkout-modal" class="hidden fixed inset-0 z-[55] bg-black/85 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3.5 shadow-2xl tab-pane border-amber-400/40">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-white" data-i18n="checkout_heading">Оформление оплаты</h3>
+          <button onclick="closeModal('checkout-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+
+        <div class="tg-elevated rounded-xl p-3 flex items-center justify-between">
+          <div>
+            <div id="co-item-title" class="text-xs font-extrabold text-white">Sqwizzy VIP</div>
+            <div id="co-item-sub" class="text-[10px] text-orange-200/70 mt-0.5">+250 SC, +100 🎰</div>
+          </div>
+          <div id="co-price-badge" class="font-mono font-black text-sm text-amber-300">100 ⭐</div>
+        </div>
+
+        <!-- Stars View -->
+        <div id="co-stars-block" class="space-y-3">
+          <div class="flex items-center justify-between text-xs bg-amber-500/15 border border-amber-400/30 rounded-xl px-3 py-2">
+            <span class="text-amber-100" data-i18n="your_stars_lbl">Ваш баланс Stars:</span>
+            <span id="co-stars-bal" class="font-mono font-bold text-amber-300">25 ⭐</span>
+          </div>
+          <button onclick="payWithTelegramStars()" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs active:scale-95 shadow">
+            ⭐ <span data-i18n="pay_stars_cta">Оплатить Telegram Stars</span>
+          </button>
+        </div>
+
+        <!-- Card / Monobank View -->
+        <div id="co-card-block" class="hidden space-y-3">
+          <div class="bg-slate-950 rounded-xl p-3 border border-white/10 space-y-2">
+            <div class="flex items-center justify-between text-[11px] text-orange-200/70">
+              <span data-i18n="transfer_card_hint">Переведите на карту или Банку:</span>
+              <button onclick="copyCardToClipboard()" class="text-amber-300 font-bold">📋 <span data-i18n="copy_word">Копия</span></button>
+            </div>
+            <div class="font-mono font-extrabold text-sm text-white">4874 0700 6225 9666</div>
+            <button onclick="openMonobankLink()" class="w-full py-2 rounded-lg bg-white text-slate-950 font-extrabold text-xs shadow">
+              🫙 <span data-i18n="open_mono_btn">Открыть Банку Monobank</span>
+            </button>
+          </div>
+
+          <div>
+            <label class="block text-[11px] text-orange-200/70 mb-1" data-i18n="receipt_inp_lbl">Время перевода или комментарий к чеку:</label>
+            <input id="co-receipt-inp" type="text"
+              class="w-full tg-elevated rounded-xl px-3 py-2 text-xs text-white outline-none" />
+          </div>
+
+          <button onclick="payWithCardReceipt()" class="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-black text-xs active:scale-95 shadow">
+            ✅ <span data-i18n="confirm_receipt_cta">Подтвердить перевод и активировать</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PROFILE EDITOR MODAL -->
+    <div id="profile-editor-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3.5 shadow-2xl tab-pane max-h-[88vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-white">✏️ <span data-i18n="prof_edit_title">Редактирование профиля</span></h3>
+          <button onclick="closeModal('profile-editor-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+
+        <!-- Avatar Upload & Animated Frames -->
+        <div class="tg-elevated rounded-2xl p-3 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white" data-i18n="avatar_frame_lbl">Аватар и рамка</span>
+            <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-orange-500/20 border border-orange-400/35 text-orange-200 text-[11px] font-bold active:scale-95">
+              📷 <span data-i18n="upload_photo_btn">Загрузить фото</span>
+              <input type="file" accept="image/*" class="hidden" onchange="onAvatarFileChange(event)" />
+            </label>
+          </div>
+          <div id="editor-frames-grid" class="grid grid-cols-2 gap-1.5"></div>
+        </div>
+
+        <!-- Nickname & Clan Tag -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="col-span-2">
+            <label class="block text-[11px] text-orange-200/70 mb-1" data-i18n="nick_lbl">Никнейм</label>
+            <input id="ed-name-inp" type="text" maxlength="22" class="w-full tg-elevated rounded-xl px-3 py-2 text-xs text-white outline-none" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-orange-200/70 mb-1" data-i18n="tag_lbl">Тег</label>
+            <input id="ed-tag-inp" type="text" maxlength="10" class="w-full tg-elevated rounded-xl px-2.5 py-2 text-xs font-mono text-amber-300 outline-none" />
+          </div>
+        </div>
+
+        <!-- Cover Banner -->
+        <div class="tg-elevated rounded-2xl p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white" data-i18n="cover_section_lbl">Обложка профиля</span>
+            <span class="text-[10px] font-extrabold text-amber-300">🍁 VIP = Своя Фото/GIF</span>
+          </div>
+          <div id="editor-covers-grid" class="grid grid-cols-2 gap-1.5"></div>
+          <div id="editor-custom-cover-box"></div>
+        </div>
+
+        <!-- Bio Quote -->
+        <div>
+          <label class="block text-[11px] text-orange-200/70 mb-1" data-i18n="bio_label">О себе / Статус</label>
+          <textarea id="ed-bio-inp" rows="2" maxlength="160" class="w-full tg-elevated rounded-xl px-3 py-2 text-xs text-white outline-none resize-none"></textarea>
+        </div>
+
+        <button onclick="saveProfileChanges()" class="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs active:scale-95 shadow">
+          💾 <span data-i18n="save_btn">Сохранить изменения</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. BADGE PICKER MODAL -->
+    <div id="badge-picker-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3 shadow-2xl tab-pane max-h-[88vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-white">🔥 <span data-i18n="badge_picker_title">Бейджи RandomEmodj18</span></h3>
+          <button onclick="closeModal('badge-picker-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+
+        <div class="tg-elevated rounded-xl p-2.5 flex items-center justify-between gap-2">
+          <span class="text-[11px] text-orange-200/80" data-i18n="pack_promo_inline">Все 12 бейджей открываются паком RandomEmodj18</span>
+          <button onclick="openRandomEmodj18Telegram()" class="shrink-0 px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-extrabold text-[10px]">
+            Telegram ↗
+          </button>
+        </div>
+
+        <div id="badge-picker-grid" class="grid grid-cols-2 gap-2"></div>
+      </div>
+    </div>
+
+    <!-- 6. BARN MODAL -->
+    <div id="barn-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3.5 shadow-2xl tab-pane">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-white">🏠 <span data-i18n="barn_modal_title">Амбар фермы</span></h3>
+          <button onclick="closeModal('barn-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+        <div id="barn-items-container" class="space-y-2 max-h-56 overflow-y-auto"></div>
+        <button onclick="sellAllBarnHarvest()" class="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-black text-xs active:scale-95 shadow">
+          💰 <span data-i18n="sell_all_harvest_btn">Продать всё</span> (<span id="barn-total-sc">0</span> SC)
+        </button>
+      </div>
+    </div>
+
+    <!-- 7. PROMOCODE MODAL -->
+    <div id="promo-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3 shadow-2xl tab-pane">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-white">🎁 <span data-i18n="promo_title">Активация промокода</span></h3>
+          <button onclick="closeModal('promo-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+        <p class="text-xs text-orange-200/70" data-i18n="promo_codes_hint">Доступные коды: #autumn (+100 SC), VIP2026 (+150 SC)</p>
+        <div class="flex gap-2">
+          <input id="promo-code-inp" type="text" placeholder="#autumn" class="flex-1 tg-elevated rounded-xl px-3 py-2 text-xs font-mono text-white outline-none" />
+          <button onclick="activatePromoCode()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 font-extrabold text-xs active:scale-95 shadow" data-i18n="activate_word">
+            Активировать
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. SUPPORT DEVELOPER MODAL -->
+    <div id="support-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3 shadow-2xl tab-pane">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-white">📩 <span data-i18n="contact_dev_title">Связаться с разработчиком</span></h3>
+          <button onclick="closeModal('support-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+        <div>
+          <label class="block text-[11px] text-orange-200/70 mb-1" data-i18n="subj_lbl">Тема</label>
+          <input id="sup-subj-inp" type="text" maxlength="60" class="w-full tg-elevated rounded-xl px-3 py-2 text-xs text-white outline-none" />
+        </div>
+        <div>
+          <label class="block text-[11px] text-orange-200/70 mb-1" data-i18n="msg_lbl">Сообщение для Akiyama_Wizard</label>
+          <textarea id="sup-msg-inp" rows="3" maxlength="400" class="w-full tg-elevated rounded-xl px-3 py-2 text-xs text-white outline-none resize-none"></textarea>
+        </div>
+        <button onclick="submitDevTicket()" class="w-full py-2.5 rounded-xl bg-orange-500 text-slate-950 font-extrabold text-xs active:scale-95 shadow">
+          🚀 <span data-i18n="send_btn">Отправить</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 9. GLOBAL LEADERBOARD MODAL -->
+    <div id="leaderboard-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3.5 shadow-2xl tab-pane max-h-[88vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-black text-white">🏆 <span data-i18n="lb_modal_title">Рейтинг игроков Sqwizzy</span></h3>
+          <button onclick="closeModal('leaderboard-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1.5 tg-elevated p-1 rounded-xl">
+          <button id="lb-tab-sc" onclick="switchLeaderboardMode('sc')" class="py-1.5 rounded-lg text-xs font-extrabold bg-amber-400 text-slate-950 transition" data-i18n="lb_sort_sc">
+            💰 По балансу SC
+          </button>
+          <button id="lb-tab-farm" onclick="switchLeaderboardMode('farm')" class="py-1.5 rounded-lg text-xs font-bold text-slate-300 transition" data-i18n="lb_sort_farm">
+            🌾 По уровню фермы
+          </button>
+        </div>
+
+        <p class="text-[11px] text-orange-200/70 px-1" data-i18n="lb_click_hint">Нажмите на игрока, чтобы открыть его профиль</p>
+        <div id="leaderboard-list" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- 10. PUBLIC PLAYER PROFILE VIEWER MODAL -->
+    <div id="public-profile-modal" class="hidden fixed inset-0 z-[58] bg-black/85 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl overflow-hidden shadow-2xl tab-pane max-h-[88vh] overflow-y-auto">
+        <div id="pub-cover-box" class="h-24 w-full relative cover-midnight">
+          <button onclick="closeModal('public-profile-modal')" class="absolute top-3 right-3 w-8 h-8 rounded-xl bg-slate-950/80 border border-white/15 text-xs font-bold text-white">✕</button>
+          <div id="pub-vip-tag" class="hidden absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-black text-[10px]">
+            🍁 SQWIZZY VIP
+          </div>
+        </div>
+        <div id="pub-profile-body" class="px-4 pb-4 -mt-10 relative space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- 11. REFERRAL SYSTEM MODAL -->
+    <div id="referral-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+      <div class="w-full max-w-md tg-card rounded-3xl p-4 space-y-3.5 shadow-2xl tab-pane max-h-[88vh] overflow-y-auto border-emerald-400/30">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-black text-white">🤝 <span data-i18n="ref_modal_title">Реферальная система</span></h3>
+          <button onclick="closeModal('referral-modal')" class="w-7 h-7 rounded-lg tg-elevated text-slate-300 text-xs font-bold">✕</button>
+        </div>
+
+        <div class="rounded-2xl p-3.5 bg-emerald-950/50 border border-emerald-400/35 space-y-1.5">
+          <div class="text-xs font-extrabold text-emerald-300" data-i18n="ref_reward_banner">🎁 +100 SC и +25 🎰 за каждого друга!</div>
+          <p class="text-[11px] text-slate-300 leading-relaxed" data-i18n="ref_reward_sub">
+            Поделитесь своей реферальной ссылкой в Telegram. Когда друг запустит бота, вы оба получите стартовый бонус.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="tg-elevated rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-orange-200/70" data-i18n="ref_invited_lbl">Приглашено друзей</div>
+            <div id="ref-count-val" class="font-mono font-black text-base text-white mt-0.5">2</div>
+          </div>
+          <div class="tg-elevated rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-orange-200/70" data-i18n="ref_earned_lbl">Заработано всего</div>
+            <div id="ref-earned-val" class="font-mono font-black text-base text-amber-400 mt-0.5">200 SC</div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-[11px] text-orange-200/70" data-i18n="ref_link_lbl">Ваша персональная ссылка:</label>
+          <div class="flex items-center gap-2 bg-slate-950/80 border border-white/10 rounded-xl px-3 py-2">
+            <span id="ref-link-text" class="text-[11px] font-mono text-amber-200 truncate flex-1">https://t.me/sqwizzy_bot?start=ref_777</span>
+            <button onclick="copyReferralLink()" class="shrink-0 px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-extrabold text-[11px] active:scale-95">
+              📋 <span data-i18n="copy_word">Копия</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="shareReferralTelegram()" class="py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-extrabold text-xs active:scale-95 shadow">
+            📲 <span data-i18n="ref_share_tg">Отправить в Telegram</span>
+          </button>
+          <button onclick="simulateReferralJoin()" class="py-2.5 rounded-xl tg-elevated hover:bg-orange-950/60 text-emerald-300 font-extrabold text-xs active:scale-95 shadow">
+            ✨ <span data-i18n="ref_claim_test">+1 Реферал (Тест)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Stack -->
+    <div id="toast-box" class="fixed top-24 left-1/2 -translate-x-1/2 z-[70] pointer-events-none flex flex-col items-center gap-2 w-[90%] max-w-sm"></div>
+
+  </div>
+
+  <!-- =========================================================
+       APPLICATION SCRIPT
+       ========================================================= -->
+  <script>
+    // ---------------------------------------------------------
+    // 1. TELEGRAM WEBAPP INITIALIZATION
+    // ---------------------------------------------------------
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) {
+      try {
+        tg.ready();
+        tg.expand();
+        if (tg.setHeaderColor) tg.setHeaderColor('#1c100c');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#1c100c');
+      } catch (e) {}
+    }
+
+    function haptic(type = 'light') {
+      try {
+        if (!tg || !tg.HapticFeedback) return;
+        if (['success', 'warning', 'error'].includes(type)) tg.HapticFeedback.notificationOccurred(type);
+        else if (type === 'selection') tg.HapticFeedback.selectionChanged();
+        else tg.HapticFeedback.impactOccurred(type);
+      } catch (e) {}
+    }
+
+    // ---------------------------------------------------------
+    // 2. RU & UA DICTIONARY
+    // ---------------------------------------------------------
+    const LANG_DICT = {
+      ru: {
+        pill_chips: '🎰 Фишки',
+        chips_word: 'Фишки',
+        daily_sc_title: 'Бонус Sqwizzy Coins',
+        menu_sections_lbl: 'Разделы бота',
+        open_wallet_link: 'Кошелёк',
+        nav_home: 'Меню',
+        nav_profile: 'Профиль',
+        nav_farm: 'Ферма',
+        nav_casino: 'Казино',
+        menu_profile_desc: 'Аватар, обложка, бейджи',
+        menu_farm_desc: 'Урожай от 30м до 9ч',
+        menu_rating_title: 'Рейтинг игроков',
+        menu_rating_desc: 'Топ богачей и профили',
+        menu_ref_title: 'Рефералы',
+        menu_ref_desc: 'Зови друзей за бонусы',
+        menu_mp_title: 'Мультиплеер (PvP)',
+        menu_mp_desc: 'Кости и Орёл/Решка',
+        menu_casino_title: 'Казино и Обмен',
+        menu_casino_desc: 'Рулетка, покер, обменник',
+        menu_donate_title: 'Донат и VIP',
+        menu_donate_desc: 'VIP, RandomEmodj18, Stars',
+        menu_promo_title: 'Промокоды',
+        menu_promo_desc: 'Ввести бонус-код',
+        contact_dev_title: 'Связаться с разработчиком',
+        contact_dev_sub: 'Предложения, баги или сотрудничество',
+        dev_only_label: 'Разработчик:',
+        lb_modal_title: 'Рейтинг игроков Sqwizzy',
+        lb_sort_sc: '💰 По балансу SC',
+        lb_sort_farm: '🌾 По уровню фермы',
+        lb_click_hint: 'Нажмите на игрока, чтобы открыть его профиль',
+        ref_modal_title: 'Реферальная система',
+        ref_reward_banner: '🎁 +100 SC и +25 🎰 за каждого друга!',
+        ref_reward_sub: 'Поделитесь своей реферальной ссылкой в Telegram. Когда друг запустит бота, вы оба получите стартовый бонус.',
+        ref_invited_lbl: 'Приглашено друзей',
+        ref_earned_lbl: 'Заработано всего',
+        ref_link_lbl: 'Ваша персональная ссылка:',
+        ref_share_tg: 'Отправить в Telegram',
+        ref_claim_test: '+1 Реферал (Тест)',
+        edit_btn: 'Изменить',
+        bio_label: 'О себе / Статус',
+        badges_showcase_lbl: 'Бейджи RandomEmodj18',
+        choose_badge_btn: 'Выбрать →',
+        stat_sc_lbl: '💰 Баланс SC',
+        stat_chips_lbl: '🎰 Фишки казино',
+        stat_farm_lbl: '🌾 Уровень фермы',
+        stat_pvp_lbl: '⚔️ Победы PvP',
+        random18_card_sub: 'Оригинальный набор эмодзи для Telegram',
+        open_tg_btn: 'Открыть ↗',
+        barn_btn: 'Амбар',
+        barn_sign: 'АМБАР',
+        tool_tray_title: '🎒 Инструменты и мешочки с семенами',
+        tool_tray_hint: 'Нажмите на грядку, чтобы высыпать',
+        invite_friend_title: '🤝 Пригласить друга в Telegram',
+        invite_friend_sub: 'Отправь вызов на дуэль в любой чат',
+        invite_btn: 'Позвать',
+        dice_title: '🎲 PvP Кости',
+        dice_sub: 'Дуэль на фишки против соперника (x2)',
+        dice_roll_btn: 'Бросить кости',
+        cf_title: '🪙 Орёл и Решка',
+        cf_sub: 'Войди в комнату или создай свою (SC)',
+        cf_create: 'Создать',
+        roulette_title: '🎡 Европейская Рулетка (0–36)',
+        roulette_sub: 'Ставки на фишки казино',
+        bet_red: 'Красное',
+        bet_black: 'Чёрное',
+        poker_title: '♠️ Техасский Холдем',
+        poker_sub: 'Вход: 50 🎰 • Выигрыш: 150 🎰',
+        poker_community: 'Карты на столе',
+        poker_your_cards: 'Ваши карты',
+        poker_deal_btn: 'Раздать карты (50 🎰)',
+        exch_title: '🏦 Обменник SC ⇄ Фишки',
+        exch_sc_to_chips: 'SC → Фишки',
+        exch_chips_to_sc: 'Фишки → SC',
+        exch_result_lbl: 'Получите:',
+        exch_submit_btn: 'Обменять',
+        wallet_title: 'Кошелёк Sqwizzy',
+        topup_stars_lbl: '⭐ Пополнить Telegram Stars',
+        quick_conv_lbl: 'Быстрый обмен: 10 SC → 20 🎰',
+        quick_conv_sub: 'Мгновенно для игр в PvP и Казино',
+        tx_log_title: 'Последние операции',
+        go_vip_store_btn: 'Открыть VIP и Донат магазин',
+        donate_title: 'Донат и Sqwizzy VIP',
+        balance_lbl: 'Баланс:',
+        or_100_stars: 'или 100 ⭐',
+        vip_b1: 'Бонус при активации: +250 SC и +100 🎰 Фишек',
+        vip_b2: 'Своя обложка профиля (загрузка Фото или GIF)',
+        vip_b3: 'Эксклюзивные VIP-рамки аватара',
+        vip_b4: '+25% к продаже урожая и сбор SC каждые 2 часа',
+        pack_random18_title: 'Пак стикеров «RandomEmodj18»',
+        pack_random18_sub: 'Открывает все 12 анимированных бейджей из пака — ставь любой в профиль!',
+        view_pack_tg: 'Посмотреть стикерпак в Telegram ↗',
+        direct_card_title: '☕ Прямая поддержка на карту / Банку',
+        copy_word: 'Копия',
+        open_mono_btn: 'Открыть Банку Monobank',
+        checkout_heading: 'Оформление оплаты',
+        your_stars_lbl: 'Ваш баланс Stars:',
+        pay_stars_cta: 'Оплатить Telegram Stars',
+        transfer_card_hint: 'Переведите на карту или Банку:',
+        receipt_inp_lbl: 'Время перевода или комментарий к чеку:',
+        confirm_receipt_cta: 'Подтвердить перевод и активировать',
+        prof_edit_title: 'Редактирование профиля',
+        avatar_frame_lbl: 'Аватар и рамка',
+        upload_photo_btn: 'Загрузить фото',
+        nick_lbl: 'Никнейм',
+        tag_lbl: 'Тег',
+        cover_section_lbl: 'Обложка профиля',
+        save_btn: 'Сохранить изменения',
+        badge_picker_title: 'Бейджи RandomEmodj18',
+        pack_promo_inline: 'Все 12 бейджей открываются паком RandomEmodj18',
+        barn_modal_title: 'Амбар фермы',
+        sell_all_harvest_btn: 'Продать всё',
+        promo_title: 'Активация промокода',
+        promo_codes_hint: 'Доступные коды: #autumn (+100 SC), VIP2026 (+150 SC)',
+        activate_word: 'Активировать',
+        subj_lbl: 'Тема',
+        msg_lbl: 'Сообщение для Akiyama_Wizard',
+        send_btn: 'Отправить',
+        watering_can_word: 'Лейка',
+        empty_soil_hint: 'Высыпать семена',
+        ready_collect_hint: 'Собрать!',
+        locked_bed_lbl: 'Закрыто',
+        barn_empty_msg: 'Амбар пуст — вырастите и соберите урожай!',
+        you_word: 'Вы',
+        opponent_word: '@Соперник',
+        heads_word: 'Орёл',
+        tails_word: 'Решка',
+        join_word: 'Войти',
+        ready_status: 'Готово',
+        spinning_status: 'Крутится...',
+        pot_prefix: 'Банк',
+        err_no_sc: '❌ Недостаточно SC!',
+        err_no_chips: '❌ Недостаточно фишек!',
+        err_no_stars: '❌ Недостаточно Stars! Пополните в кошельке.',
+        vip_only_cover_msg: '🍁 Своя обложка (Фото/GIF) доступна только с Sqwizzy VIP!'
+      },
+      ua: {
+        pill_chips: '🎰 Фішки',
+        chips_word: 'Фішки',
+        daily_sc_title: 'Бонус Sqwizzy Coins',
+        menu_sections_lbl: 'Розділи бота',
+        open_wallet_link: 'Гаманець',
+        nav_home: 'Меню',
+        nav_profile: 'Профіль',
+        nav_farm: 'Ферма',
+        nav_casino: 'Казино',
+        menu_profile_desc: 'Аватар, обкладинка, бейджі',
+        menu_farm_desc: 'Врожай від 30хв до 9год',
+        menu_rating_title: 'Рейтинг гравців',
+        menu_rating_desc: 'Топ багатіїв і профілі',
+        menu_ref_title: 'Реферали',
+        menu_ref_desc: 'Клич друзів за бонуси',
+        menu_mp_title: 'Мультиплеєр (PvP)',
+        menu_mp_desc: 'Кості та Орел/Решка',
+        menu_casino_title: 'Казино та Обмін',
+        menu_casino_desc: 'Рулетка, покер, обмінник',
+        menu_donate_title: 'Донат і VIP',
+        menu_donate_desc: 'VIP, RandomEmodj18, Stars',
+        menu_promo_title: 'Промокоди',
+        menu_promo_desc: 'Ввести бонус-код',
+        contact_dev_title: "Зв'язатися з розробником",
+        contact_dev_sub: 'Пропозиції, баги або співпраця',
+        dev_only_label: 'Розробник:',
+        lb_modal_title: 'Рейтинг гравців Sqwizzy',
+        lb_sort_sc: '💰 За балансом SC',
+        lb_sort_farm: '🌾 За рівнем ферми',
+        lb_click_hint: 'Натисніть на гравця, щоб відкрити його профіль',
+        ref_modal_title: 'Реферальна система',
+        ref_reward_banner: '🎁 +100 SC та +25 🎰 за кожного друга!',
+        ref_reward_sub: 'Поділіться своїм реферальним посиланням у Telegram. Коли друг запустить бота, ви обидва отримаєте стартовий бонус.',
+        ref_invited_lbl: 'Запрошено друзів',
+        ref_earned_lbl: 'Зароблено всього',
+        ref_link_lbl: 'Ваше персональне посилання:',
+        ref_share_tg: 'Надіслати в Telegram',
+        ref_claim_test: '+1 Реферал (Тест)',
+        edit_btn: 'Змінити',
+        bio_label: 'Про себе / Статус',
+        badges_showcase_lbl: 'Бейджі RandomEmodj18',
+        choose_badge_btn: 'Обрати →',
+        stat_sc_lbl: '💰 Баланс SC',
+        stat_chips_lbl: '🎰 Фішки казино',
+        stat_farm_lbl: '🌾 Рівень ферми',
+        stat_pvp_lbl: '⚔️ Перемоги PvP',
+        random18_card_sub: 'Оригінальний набір емодзі для Telegram',
+        open_tg_btn: 'Відкрити ↗',
+        barn_btn: 'Амбар',
+        barn_sign: 'АМБАР',
+        tool_tray_title: '🎒 Інструменти та мішечки з насінням',
+        tool_tray_hint: 'Натисніть на грядку, щоб висипати',
+        invite_friend_title: '🤝 Запросити друга в Telegram',
+        invite_friend_sub: 'Надішли виклик на дуель у будь-який чат',
+        invite_btn: 'Покликати',
+        dice_title: '🎲 PvP Кості',
+        dice_sub: 'Дуель на фішки проти суперника (x2)',
+        dice_roll_btn: 'Кинути кості',
+        cf_title: '🪙 Орел і Решка',
+        cf_sub: 'Увійди в кімнату або створи свою (SC)',
+        cf_create: 'Створити',
+        roulette_title: '🎡 Європейська Рулетка (0–36)',
+        roulette_sub: 'Ставки на фішки казино',
+        bet_red: 'Червоне',
+        bet_black: 'Чорне',
+        poker_title: '♠️ Техаський Холдем',
+        poker_sub: 'Вхід: 50 🎰 • Виграш: 150 🎰',
+        poker_community: 'Карти на столі',
+        poker_your_cards: 'Ваші карти',
+        poker_deal_btn: 'Роздати карти (50 🎰)',
+        exch_title: '🏦 Обмінник SC ⇄ Фішки',
+        exch_sc_to_chips: 'SC → Фішки',
+        exch_chips_to_sc: 'Фішки → SC',
+        exch_result_lbl: 'Отримаєте:',
+        exch_submit_btn: 'Обміняти',
+        wallet_title: 'Гаманець Sqwizzy',
+        topup_stars_lbl: '⭐ Поповнити Telegram Stars',
+        quick_conv_lbl: 'Швидкий обмін: 10 SC → 20 🎰',
+        quick_conv_sub: 'Миттєво для ігор у PvP та Казино',
+        tx_log_title: 'Останні операції',
+        go_vip_store_btn: 'Відкрити VIP та Донат магазин',
+        donate_title: 'Донат і Sqwizzy VIP',
+        balance_lbl: 'Баланс:',
+        or_100_stars: 'або 100 ⭐',
+        vip_b1: 'Бонус при активації: +250 SC та +100 🎰 Фішок',
+        vip_b2: 'Своя обкладинка профілю (завантаження Фото або GIF)',
+        vip_b3: 'Ексклюзивні VIP-рамки аватара',
+        vip_b4: '+25% до продажу врожаю та збір SC кожні 2 години',
+        pack_random18_title: 'Пак стікерів «RandomEmodj18»',
+        pack_random18_sub: 'Відкриває всі 12 анімованих бейджів з паку — став будь-який у профіль!',
+        view_pack_tg: 'Переглянути стікерпак у Telegram ↗',
+        direct_card_title: '☕ Пряма підтримка на картку / Банку',
+        copy_word: 'Копія',
+        open_mono_btn: 'Відкрити Банку Monobank',
+        checkout_heading: 'Оформлення оплати',
+        your_stars_lbl: 'Ваш баланс Stars:',
+        pay_stars_cta: 'Оплатити Telegram Stars',
+        transfer_card_hint: 'Перекажіть на картку або Банку:',
+        receipt_inp_lbl: 'Час переказу або коментар до чеку:',
+        confirm_receipt_cta: 'Підтвердити переказ та активувати',
+        prof_edit_title: 'Редагування профілю',
+        avatar_frame_lbl: 'Аватар і рамка',
+        upload_photo_btn: 'Завантажити фото',
+        nick_lbl: 'Нікнейм',
+        tag_lbl: 'Тег',
+        cover_section_lbl: 'Обкладинка профілю',
+        save_btn: 'Зберегти зміни',
+        badge_picker_title: 'Бейджі RandomEmodj18',
+        pack_promo_inline: 'Усі 12 бейджів відкриваються паком RandomEmodj18',
+        barn_modal_title: 'Амбар ферми',
+        sell_all_harvest_btn: 'Продати все',
+        promo_title: 'Активація промокоду',
+        promo_codes_hint: 'Доступні коди: #autumn (+100 SC), VIP2026 (+150 SC)',
+        activate_word: 'Активувати',
+        subj_lbl: 'Тема',
+        msg_lbl: 'Повідомлення для Akiyama_Wizard',
+        send_btn: 'Надіслати',
+        watering_can_word: 'Лійка',
+        empty_soil_hint: 'Висипати насіння',
+        ready_collect_hint: 'Зібрати!',
+        locked_bed_lbl: 'Закрито',
+        barn_empty_msg: 'Амбар порожній — виростіть та зберіть врожай!',
+        you_word: 'Ви',
+        opponent_word: '@Суперник',
+        heads_word: 'Орел',
+        tails_word: 'Решка',
+        join_word: 'Увійти',
+        ready_status: 'Готово',
+        spinning_status: 'Крутиться...',
+        pot_prefix: 'Банк',
+        err_no_sc: '❌ Недостатньо SC!',
+        err_no_chips: '❌ Недостатньо фішок!',
+        err_no_stars: '❌ Недостатньо Stars! Поповніть у гаманці.',
+        vip_only_cover_msg: '🍁 Своя обкладинка (Фото/GIF) доступна лише з Sqwizzy VIP!'
+      }
+    };
+
+    function tr(key) {
+      const lang = state.lang || 'ru';
+      return (LANG_DICT[lang] && LANG_DICT[lang][key]) || LANG_DICT.ru[key] || key;
+    }
+
+    // ---------------------------------------------------------
+    // 3. RANDOMEMODJ18 BADGES
+    // ---------------------------------------------------------
+    const RANDOM18_BADGES = [
+      { id: 'skull',     ru: 'Chrome Skull',    ua: 'Chrome Skull',    free: true },
+      { id: 'flame',     ru: 'Toxic Flame',     ua: 'Toxic Flame',     free: true },
+      { id: 'eightball', ru: 'Chaos 8-Ball',    ua: 'Chaos 8-Ball',    free: true },
+      { id: 'alien',     ru: 'Cyber Alien',     ua: 'Cyber Alien',     free: false },
+      { id: 'heart',     ru: 'Glitch Heart',    ua: 'Glitch Heart',    free: false },
+      { id: 'fang',      ru: 'Venom Fang',      ua: 'Venom Fang',      free: false },
+      { id: 'crown',     ru: 'Lightning Crown', ua: 'Lightning Crown', free: false },
+      { id: 'laser',     ru: 'Laser Eyes',      ua: 'Laser Eyes',      free: false },
+      { id: 'dice',      ru: 'Golden Dice',     ua: 'Golden Dice',     free: false },
+      { id: 'mask',      ru: 'Phantom Mask',    ua: 'Phantom Mask',    free: false },
+      { id: 'radio',     ru: 'Radioactive',     ua: 'Radioactive',     free: false },
+      { id: 'diamond',   ru: 'VIP Diamond',     ua: 'VIP Diamond',     free: false }
+    ];
+
+    function getRandom18BadgeSVG(id, sizeClass = 'w-6 h-6') {
+      const icons = {
+        skull: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-float">
+          <path d="M10 17 C10 10, 26 10, 26 17 C26 21, 23 23, 22 25 L22 29 L14 29 L14 25 C13 23, 10 21, 10 17 Z" fill="#fed7aa" stroke="#c2410c" stroke-width="1.5"/>
+          <circle cx="14.5" cy="18" r="2.3" fill="#38120a"/>
+          <circle cx="21.5" cy="18" r="2.3" fill="#38120a"/>
+          <line x1="16" y1="26" x2="16" y2="29" stroke="#38120a" stroke-width="1.4"/>
+          <line x1="20" y1="26" x2="20" y2="29" stroke="#38120a" stroke-width="1.4"/>
+        </svg>`,
+        flame: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-pulse">
+          <path d="M18 4 C25 11, 29 17, 26 25 C24 30, 19 32, 18 32 C12 32, 8 27, 10 20 C11 16, 15 14, 15 10 C17 12, 18 14, 18 4 Z" fill="#f97316"/>
+          <path d="M18 14 C22 18, 22 23, 19 28 C16 28, 14 25, 15 20 Z" fill="#fde047"/>
+        </svg>`,
+        eightball: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-spin">
+          <circle cx="18" cy="18" r="14" fill="#2b1812" stroke="#f97316" stroke-width="1.6"/>
+          <circle cx="18" cy="18" r="6.5" fill="#ffffff"/>
+          <text x="18" y="21" text-anchor="middle" font-size="9" font-weight="900" fill="#38120a">8</text>
+        </svg>`,
+        alien: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-float">
+          <path d="M8 15 C8 8, 28 8, 28 15 C28 23, 21 31, 18 31 C15 31, 8 23, 8 15 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+          <ellipse cx="14" cy="18" rx="2.5" ry="4" transform="rotate(-18 14 18)" fill="#38120a"/>
+          <ellipse cx="22" cy="18" rx="2.5" ry="4" transform="rotate(18 22 18)" fill="#38120a"/>
+        </svg>`,
+        heart: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-pulse">
+          <path d="M18 30 L7 19 A6.5 6.5 0 0 1 18 11 A6.5 6.5 0 0 1 29 19 Z" fill="#ea580c" stroke="#fed7aa" stroke-width="1.2"/>
+          <polyline points="14,19 17,16 19,21 22,17" fill="none" stroke="#ffffff" stroke-width="1.8"/>
+        </svg>`,
+        fang: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-float">
+          <path d="M6 15 Q18 23 30 15 Q24 27 18 27 Q12 27 6 15 Z" fill="#991b1b" stroke="#f87171" stroke-width="1.4"/>
+          <polygon points="11,17 13.5,24 15.5,18" fill="#ffffff"/>
+          <polygon points="25,17 22.5,24 20.5,18" fill="#ffffff"/>
+        </svg>`,
+        crown: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-pulse">
+          <path d="M5 26 L7 11 L14 18 L18 7 L22 18 L29 11 L31 26 Z" fill="#f59e0b" stroke="#fef08a" stroke-width="1.4" stroke-linejoin="round"/>
+          <rect x="6" y="26" width="24" height="3.5" rx="1.5" fill="#b45309"/>
+        </svg>`,
+        laser: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-pulse">
+          <rect x="6" y="13" width="24" height="10" rx="4" fill="#38120a" stroke="#f97316" stroke-width="1.5"/>
+          <circle cx="13" cy="18" r="2.5" fill="#f97316"/>
+          <circle cx="23" cy="18" r="2.5" fill="#f97316"/>
+          <line x1="2" y1="18" x2="34" y2="18" stroke="#fed7aa" stroke-width="1.4"/>
+        </svg>`,
+        dice: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-float">
+          <rect x="7" y="7" width="22" height="22" rx="5" fill="#ea580c" stroke="#fef3c7" stroke-width="1.5"/>
+          <circle cx="13" cy="13" r="1.8" fill="#38120a"/>
+          <circle cx="23" cy="13" r="1.8" fill="#38120a"/>
+          <circle cx="18" cy="18" r="1.8" fill="#38120a"/>
+          <circle cx="13" cy="23" r="1.8" fill="#38120a"/>
+          <circle cx="23" cy="23" r="1.8" fill="#38120a"/>
+        </svg>`,
+        mask: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-float">
+          <path d="M8 10 Q18 7 28 10 L26 24 Q18 31 10 24 Z" fill="#fef3c7" stroke="#d97706" stroke-width="1.4"/>
+          <path d="M11 16 L16 18 L12 20 Z" fill="#38120a"/>
+          <path d="M25 16 L20 18 L24 20 Z" fill="#38120a"/>
+          <path d="M14 24 Q18 21 22 24" stroke="#f97316" stroke-width="2" fill="none"/>
+        </svg>`,
+        radio: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-spin">
+          <circle cx="18" cy="18" r="14" fill="#f59e0b" stroke="#78350f" stroke-width="1.6"/>
+          <circle cx="18" cy="18" r="3" fill="#38120a"/>
+          <path d="M18 18 L12 8 A11 11 0 0 1 24 8 Z" fill="#38120a"/>
+          <path d="M18 18 L28 22 A11 11 0 0 1 22 28 Z" fill="#38120a"/>
+          <path d="M18 18 L8 22 A11 11 0 0 0 14 28 Z" fill="#38120a"/>
+        </svg>`,
+        diamond: `<svg viewBox="0 0 36 36" class="${sizeClass} badge-pulse">
+          <polygon points="11,7 25,7 31,15 18,30 5,15" fill="#f97316" stroke="#fed7aa" stroke-width="1.4"/>
+          <polygon points="11,7 25,7 18,15" fill="#ffedd5"/>
+        </svg>`
+      };
+      return icons[id] || icons.skull;
+    }
+
+    // ---------------------------------------------------------
+    // 4. CONSTANTS (COVERS, FRAMES, CROPS, STORE)
+    // ---------------------------------------------------------
+    const SAVE_KEY = 'sqwizzy_autumn_v1';
+
+    const COVER_THEMES = {
+      midnight: { ru: 'Осенний закат', ua: 'Осінній захід', cls: 'cover-midnight' },
+      emerald:  { ru: 'Лесная хвоя',   ua: 'Лісова хвоя',   cls: 'cover-emerald' },
+      crimson:  { ru: 'Кленовый бор', ua: 'Кленовий бір',  cls: 'cover-crimson' },
+      vip_gold: { ru: 'Янтарь VIP',   ua: 'Янтар VIP',     cls: 'cover-vip-gold', vip: true }
+    };
+
+    const AVATAR_RINGS = {
+      standard: { ru: 'Стандарт',    ua: 'Стандарт',    cls: 'frame-standard', vip: false },
+      emerald:  { ru: 'Изумруд',     ua: 'Смарагд',     cls: 'frame-emerald',  vip: false },
+      pulse:    { ru: 'Янтарный',    ua: 'Янтарний',    cls: 'frame-pulse',    vip: false },
+      gold:     { ru: 'Золото VIP',  ua: 'Золото VIP',  cls: 'frame-gold',     vip: true },
+      crimson:  { ru: 'Огонь VIP',   ua: 'Вогонь VIP',  cls: 'frame-crimson',  vip: true }
+    };
+
+    const FARM_CROPS = {
+      wheat:      { id: 'wheat',      ru: 'Пшеница',       ua: 'Пшениця',        emoji: '🌾', cost: 10,  sell: 22,  timeSec: 18,  xp: 15, seedColor: '#f59e0b' },
+      carrot:     { id: 'carrot',     ru: 'Морковь',       ua: 'Морква',         emoji: '🥕', cost: 25,  sell: 52,  timeSec: 36,  xp: 30, seedColor: '#ea580c' },
+      corn:       { id: 'corn',       ru: 'Кукуруза',      ua: 'Кукурудза',      emoji: '🌽', cost: 60,  sell: 120, timeSec: 65,  xp: 55, seedColor: '#fde047' },
+      strawberry: { id: 'strawberry', ru: 'Клубника',      ua: 'Полуниця',       emoji: '🍓', cost: 120, sell: 240, timeSec: 110, xp: 95, seedColor: '#ef4444' },
+      watermelon: { id: 'watermelon', ru: 'Арбуз',         ua: 'Кавун',          emoji: '🍉', cost: 250, sell: 500, timeSec: 180, xp: 170, seedColor: '#2b1812' },
+      herb:       { id: 'herb',       ru: 'Особая трава',  ua: 'Особлива трава', emoji: '🌿', cost: 500, sell: 1020,timeSec: 260, xp: 300, seedColor: '#10b981' }
+    };
+
+    const EURO_WHEEL_NUMBERS = [
+      0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36,
+      11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9,
+      22, 18, 29, 7, 28, 12, 35, 3, 26
+    ];
+    const EURO_RED_SET = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+
+    function getEuroColor(n) {
+      if (n === 0) return 'green';
+      return EURO_RED_SET.has(n) ? 'red' : 'black';
+    }
+
+    // ---------------------------------------------------------
+    // 5. STATE & PERSISTENCE
+    // ---------------------------------------------------------
+    function createInitialState() {
+      const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+      const nick = tgUser ? (tgUser.first_name || 'Sqwizzy_Player').slice(0, 22) : 'Sqwizzy_Player';
+      const handle = tgUser && tgUser.username ? `@${tgUser.username}` : '@sqwizzy_player';
+      const uid = tgUser && tgUser.id ? tgUser.id : 777412;
+      const now = Date.now();
+
+      return {
+        lang: 'ru',
+        userId: uid,
+        balance: 150,
+        chips: 50,
+        stars: 25,
+        pvpWins: 7,
+        referrals: { count: 2, earnedSc: 200 },
+        vip: { active: false, expiresAt: 0 },
+        random18Unlocked: false,
+        lastScClaimAt: 0,
+        profile: {
+          name: nick,
+          handle: handle,
+          clanTag: '[UA]',
+          bio: 'Осенний вайб, покер и уютная ферма 🍁',
+          rep: 42,
+          repLiked: false,
+          avatarUrl: '',
+          avatarRing: 'standard',
+          coverTheme: 'midnight',
+          customCoverUrl: '',
+          primaryBadge: 'skull',
+          showcaseBadges: ['skull', 'flame', 'eightball']
+        },
+        farm: {
+          level: 1,
+          xp: 35,
+          selectedTool: 'wheat',
+          beds: [
+            { id: 1, unlocked: true,  cost: 0,   cropId: 'wheat',  plantedAt: now - 18000, durationSec: 18, watered: true },
+            { id: 2, unlocked: true,  cost: 0,   cropId: null,     plantedAt: null,          durationSec: null, watered: false },
+            { id: 3, unlocked: false, cost: 50,  cropId: null,     plantedAt: null,          durationSec: null, watered: false },
+            { id: 4, unlocked: false, cost: 120, cropId: null,     plantedAt: null,          durationSec: null, watered: false },
+            { id: 5, unlocked: false, cost: 250, cropId: null,     plantedAt: null,          durationSec: null, watered: false },
+            { id: 6, unlocked: false, cost: 500, cropId: null,     plantedAt: null,          durationSec: null, watered: false }
+          ],
+          barn: { wheat: 3, carrot: 1 }
+        },
+        txLog: [
+          { ru: 'Стартовый бонус', ua: 'Стартовий бонус', delta: '+150 SC' }
+        ],
+        usedPromos: []
+      };
+    }
+
+    let state = loadState();
+    let currentTab = 'home';
+    let selectedDiceBet = 10;
+    let isDiceBusy = false;
+    let wheelRotationDeg = 0;
+    let isWheelSpinning = false;
+    let exchDirection = 'buy';
+    let activePokerRound = null;
+
+    let cfRooms = [
+      { id: 1, host: 'Akiyama_Wizard', side: 'heads', bet: 30 },
+      { id: 2, host: 'Kira_Autumn', side: 'tails', bet: 15 }
+    ];
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) return createInitialState();
+        const parsed = JSON.parse(raw);
+        const base = createInitialState();
+        return {
+          ...base,
+          ...parsed,
+          vip: { ...base.vip, ...(parsed.vip || {}) },
+          profile: { ...base.profile, ...(parsed.profile || {}) },
+          farm: { ...base.farm, ...(parsed.farm || {}) }
+        };
+      } catch (e) {
+        return createInitialState();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function hasVip() {
+      return Boolean(state.vip && state.vip.active && state.vip.expiresAt > Date.now());
+    }
+
+    function logTx(ruText, uaText, delta) {
+      state.txLog.unshift({ ru: ruText, ua: uaText, delta });
+      if (state.txLog.length > 15) state.txLog.pop();
+    }
+
+    // ---------------------------------------------------------
+    // 6. TOASTS & CONFETTI
+    // ---------------------------------------------------------
+    function showToast(msg, kind = 'info') {
+      const box = document.getElementById('toast-box');
+      const el = document.createElement('div');
+      const clsMap = {
+        success: 'bg-[#381a10]/95 border-emerald-400/60 text-emerald-100',
+        error:   'bg-[#381a10]/95 border-rose-400/60 text-rose-100',
+        info:    'bg-[#2b1812]/95 border-amber-400/50 text-white'
+      };
+      el.className = `px-4 py-2.5 rounded-xl border text-xs font-bold shadow-2xl text-center transition-all duration-300 opacity-0 -translate-y-2 ${clsMap[kind] || clsMap.info}`;
+      el.textContent = msg;
+      box.appendChild(el);
+      requestAnimationFrame(() => el.classList.remove('opacity-0', '-translate-y-2'));
+      setTimeout(() => {
+        el.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => el.remove(), 280);
+      }, 2500);
+    }
+
+    function fireConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const palette = ['#f59e0b', '#ea580c', '#f97316', '#10b981', '#38bdf8'];
+      const pieces = Array.from({ length: 60 }, () => ({
+        x: canvas.width / 2 + (Math.random() - 0.5) * 100,
+        y: canvas.height * 0.45,
+        vx: (Math.random() - 0.5) * 12,
+        vy: -Math.random() * 11 - 4,
+        s: Math.random() * 6 + 4,
+        c: palette[Math.floor(Math.random() * palette.length)],
+        a: 1
+      }));
+      let tick = 0;
+      function step() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35;
+          p.a -= 0.016;
+          ctx.globalAlpha = Math.max(0, p.a);
+          ctx.fillStyle = p.c;
+          ctx.fillRect(p.x, p.y, p.s, p.s);
+        });
+        tick++;
+        if (tick < 75) requestAnimationFrame(step);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      step();
+    }
+
+    // ---------------------------------------------------------
+    // 7. LANGUAGE SWITCHER
+    // ---------------------------------------------------------
+    function toggleLanguage() {
+      state.lang = state.lang === 'ru' ? 'ua' : 'ru';
+      if (state.lang === 'ua' && state.profile.bio === 'Осенний вайб, покер и уютная ферма 🍁') {
+        state.profile.bio = 'Осінній вайб, покер та затишна ферма 🍁';
+      } else if (state.lang === 'ru' && state.profile.bio === 'Осінній вайб, покер та затишна ферма 🍁') {
+        state.profile.bio = 'Осенний вайб, покер и уютная ферма 🍁';
+      }
+      saveState();
+      haptic('selection');
+      applyLanguage();
+      showToast(state.lang === 'ru' ? '🇷🇺 Язык: Русский' : '🇺🇦 Мова: Українська', 'info');
+    }
+
+    function applyLanguage() {
+      const lang = state.lang || 'ru';
+      document.documentElement.lang = lang === 'ua' ? 'uk' : 'ru';
+      document.getElementById('lang-flag').textContent = lang === 'ru' ? '🇷🇺' : '🇺🇦';
+      document.getElementById('lang-code').textContent = lang.toUpperCase();
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (LANG_DICT[lang] && LANG_DICT[lang][key]) {
+          el.textContent = LANG_DICT[lang][key];
+        }
+      });
+
+      document.getElementById('opt-heads').textContent = `🦅 ${tr('heads_word')}`;
+      document.getElementById('opt-tails').textContent = `🪙 ${tr('tails_word')}`;
+      document.getElementById('dice-p1-name').textContent = tr('you_word');
+      document.getElementById('dice-p2-name').textContent = tr('opponent_word');
+
+      if (!isWheelSpinning) {
+        document.getElementById('roulette-status-pill').textContent = tr('ready_status');
+      }
+
+      refreshAllUI();
+    }
+
+    // ---------------------------------------------------------
+    // 8. GLOBAL UI REFRESH & NAVIGATION
+    // ---------------------------------------------------------
+    function refreshAllUI() {
+      const lang = state.lang;
+      const vip = hasVip();
+
+      const hdrVip = document.getElementById('header-vip-badge');
+      if (vip) hdrVip.classList.remove('hidden');
+      else hdrVip.classList.add('hidden');
+
+      document.getElementById('hdr-sc').textContent = state.balance;
+      document.getElementById('hdr-chips').textContent = state.chips;
+      document.getElementById('hdr-stars').textContent = state.stars;
+
+      updateHomeSection();
+      renderProfileTab();
+      renderFarmToolTray();
+      renderFarmBeds();
+      renderCoinflipRooms();
+      refreshExchPreview();
+    }
+
+    function updateHomeSection() {
+      const lang = state.lang;
+      const vip = hasVip();
+
+      const heroTitle = document.getElementById('home-hero-title');
+      const heroSub = document.getElementById('home-hero-sub');
+      const heroBtn = document.getElementById('home-vip-btn-text');
+
+      if (vip) {
+        heroTitle.textContent = lang === 'ru' ? '🍁 Sqwizzy VIP активен (30 дн.)' : '🍁 Sqwizzy VIP активний (30 дн.)';
+        heroSub.textContent = lang === 'ru'
+          ? 'Своя обложка Фото/GIF разблокирована • +25% на ферме • Сбор SC каждые 2 часа.'
+          : 'Своя обкладинка Фото/GIF розблокована • +25% на фермі • Збір SC кожні 2 години.';
+        heroBtn.textContent = lang === 'ru' ? 'Открыть Донат и Стикеры' : 'Відкрити Донат і Стікери';
+      } else {
+        heroTitle.textContent = lang === 'ru' ? 'Премиум статус • 150 ₴ / мес' : 'Преміум статус • 150 ₴ / міс';
+        heroSub.textContent = lang === 'ru'
+          ? 'Бонус +250 SC и +100 🎰, своя обложка (Фото/GIF), +25% на ферме и сбор SC каждые 2 часа.'
+          : 'Бонус +250 SC та +100 🎰, своя обкладинка (Фото/GIF), +25% на фермі та збір SC кожні 2 години.';
+        heroBtn.textContent = lang === 'ru'
+          ? 'Открыть VIP и Донат (150 ₴ / 100 ⭐)'
+          : 'Відкрити VIP і Донат (150 ₴ / 100 ⭐)';
+      }
+
+      const cdSec = vip ? 2 * 3600 : 4 * 3600;
+      const elapsed = Math.floor((Date.now() - state.lastScClaimAt) / 1000);
+      const left = cdSec - elapsed;
+
+      const vipCdBadge = document.getElementById('home-vip-cd-badge');
+      if (vip) {
+        vipCdBadge.classList.remove('hidden');
+        vipCdBadge.textContent = lang === 'ru' ? 'VIP 2ч' : 'VIP 2г';
+      } else {
+        vipCdBadge.classList.add('hidden');
+      }
+
+      document.getElementById('home-sc-timer-sub').textContent = lang === 'ru'
+        ? `Доступно каждые ${vip ? '2 ч' : '4 ч'} • Награда +25 SC`
+        : `Доступно кожні ${vip ? '2 год' : '4 год'} • Нагорода +25 SC`;
+
+      const claimBtn = document.getElementById('home-sc-claim-btn');
+      if (left <= 0) {
+        claimBtn.className = 'shrink-0 px-3.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-extrabold text-xs active:scale-95 transition shadow';
+        claimBtn.textContent = '+25 SC';
+      } else {
+        const h = String(Math.floor(left / 3600)).padStart(2, '0');
+        const m = String(Math.floor((left % 3600) / 60)).padStart(2, '0');
+        const s = String(left % 60).padStart(2, '0');
+        claimBtn.className = 'shrink-0 px-3 py-2 rounded-xl tg-elevated text-[11px] font-mono font-bold text-orange-200/80';
+        claimBtn.textContent = `⏳ ${h}:${m}:${s}`;
+      }
+    }
+
+    function claimPeriodicSC() {
+      const vip = hasVip();
+      const cdSec = vip ? 2 * 3600 : 4 * 3600;
+      const left = cdSec - Math.floor((Date.now() - state.lastScClaimAt) / 1000);
+
+      if (left > 0) {
+        const hrs = Math.floor(left / 3600);
+        const mins = Math.floor((left % 3600) / 60);
+        haptic('warning');
+        return showToast(
+          state.lang === 'ru'
+            ? `⏳ Подождите ещё ${hrs} ч ${mins} мин`
+            : `⏳ Зачекайте ще ${hrs} год ${mins} хв`,
+          'info'
+        );
+      }
+
+      state.balance += 25;
+      state.lastScClaimAt = Date.now();
+      logTx('Бонус Sqwizzy Coins', 'Бонус Sqwizzy Coins', '+25 SC');
+      saveState();
+      haptic('success');
+      refreshAllUI();
+      showToast('💰 +25 SC!', 'success');
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      haptic('selection');
+
+      ['home', 'profile', 'farm', 'pvp', 'casino'].forEach(tName => {
+        const section = document.getElementById(`tab-${tName}`);
+        const btn = document.getElementById(`nav-${tName}`);
+        const dot = btn.querySelector('.nav-dot');
+
+        if (tName === tab) {
+          section.classList.remove('hidden');
+          btn.classList.add('text-amber-400', 'bg-white/[0.08]');
+          btn.classList.remove('text-orange-200/70');
+          dot.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+          btn.classList.remove('text-amber-400', 'bg-white/[0.08]');
+          btn.classList.add('text-orange-200/70');
+          dot.classList.add('hidden');
+        }
+      });
+    }
+
+    // ---------------------------------------------------------
+    // 9. PROFILE & RANDOMEMODJ18 BADGES
+    // ---------------------------------------------------------
+    function renderProfileTab() {
+      const p = state.profile;
+      const lang = state.lang;
+      const vip = hasVip();
+
+      const coverBox = document.getElementById('profile-cover-box');
+      const coverImg = document.getElementById('profile-cover-img');
+      const theme = COVER_THEMES[p.coverTheme] || COVER_THEMES.midnight;
+      coverBox.className = `h-28 w-full relative overflow-hidden ${theme.cls}`;
+
+      if (vip && p.customCoverUrl) {
+        coverImg.src = p.customCoverUrl;
+        coverImg.classList.remove('hidden');
+      } else {
+        coverImg.classList.add('hidden');
+      }
+
+      const vipTag = document.getElementById('profile-cover-vip-tag');
+      if (vip) vipTag.classList.remove('hidden');
+      else vipTag.classList.add('hidden');
+
+      const ring = AVATAR_RINGS[p.avatarRing] || AVATAR_RINGS.standard;
+      document.getElementById('profile-avatar-ring').className =
+        `w-20 h-20 rounded-full flex items-center justify-center shadow-lg ${ring.cls}`;
+
+      const core = document.getElementById('profile-avatar-core');
+      if (p.avatarUrl) {
+        core.innerHTML = `<img src="${p.avatarUrl}" alt="Avatar" class="w-full h-full object-cover" />`;
+      } else {
+        core.textContent = (p.name || 'SQ').slice(0, 2).toUpperCase();
+      }
+
+      document.getElementById('profile-name-display').textContent = p.name;
+      document.getElementById('profile-primary-badge').innerHTML = getRandom18BadgeSVG(p.primaryBadge || 'skull', 'w-6 h-6');
+      document.getElementById('profile-handle-display').textContent = p.handle;
+      document.getElementById('profile-clan-display').textContent = p.clanTag || '[UA]';
+      document.getElementById('profile-bio-display').textContent = p.bio;
+      document.getElementById('profile-rep-val').textContent = p.rep;
+
+      const slotsEl = document.getElementById('profile-showcase-slots');
+      const slots = (p.showcaseBadges || ['skull', 'flame', 'eightball']).slice(0, 3);
+      slotsEl.innerHTML = slots.map(bId => {
+        const bObj = RANDOM18_BADGES.find(b => b.id === bId) || RANDOM18_BADGES[0];
+        return `
+          <div onclick="openBadgePickerModal()" class="cursor-pointer tg-card hover:bg-orange-950/60 rounded-xl p-2 flex flex-col items-center text-center transition active:scale-95">
+            ${getRandom18BadgeSVG(bObj.id, 'w-7 h-7')}
+            <span class="text-[9px] font-bold text-orange-200 mt-1 truncate w-full">${bObj[lang]}</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('prof-stat-sc').textContent = `${state.balance} SC`;
+      document.getElementById('prof-stat-chips').textContent = `${state.chips} 🎰`;
+      document.getElementById('prof-stat-farm').textContent = `Lvl ${state.farm.level} (${state.farm.xp} XP)`;
+      document.getElementById('prof-stat-pvp').textContent = state.pvpWins;
+
+      document.getElementById('random18-pack-icon').innerHTML = getRandom18BadgeSVG('flame', 'w-7 h-7');
+    }
+
+    function likeProfileReputation() {
+      haptic('success');
+      if (!state.profile.repLiked) {
+        state.profile.rep += 1;
+        state.profile.repLiked = true;
+        saveState();
+        renderProfileTab();
+        showToast(state.lang === 'ru' ? '❤️ +1 к репутации!' : '❤️ +1 до репутації!', 'success');
+      } else {
+        showToast(state.lang === 'ru' ? '❤️ Вы уже поставили лайк' : '❤️ Ви вже поставили вподобайку', 'info');
+      }
+    }
+
+    function openRandomEmodj18Telegram() {
+      const url = 'https://t.me/addemoji/RandomEmodj18';
+      haptic('medium');
+      if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
+      else window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function openProfileEditor() {
+      haptic('light');
+      const p = state.profile;
+      const lang = state.lang;
+      const vip = hasVip();
+
+      document.getElementById('ed-name-inp').value = p.name;
+      document.getElementById('ed-tag-inp').value = p.clanTag;
+      document.getElementById('ed-bio-inp').value = p.bio;
+
+      const ringsGrid = document.getElementById('editor-frames-grid');
+      ringsGrid.innerHTML = Object.entries(AVATAR_RINGS).map(([k, obj]) => {
+        const locked = obj.vip && !vip;
+        const active = p.avatarRing === k;
+        return `
+          <button type="button" onclick="chooseAvatarRing('${k}')"
+            class="py-2 px-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition ${active ? 'bg-amber-400/20 border-amber-400 text-white' : locked ? 'bg-slate-950/70 border-amber-400/30 text-amber-200/70' : 'tg-card text-slate-300'}">
+            <span>${obj[lang]}</span>
+            ${locked ? '<span>🔒 VIP</span>' : active ? '<span>✓</span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      const coversGrid = document.getElementById('editor-covers-grid');
+      coversGrid.innerHTML = Object.entries(COVER_THEMES).map(([k, obj]) => {
+        const locked = obj.vip && !vip;
+        const active = p.coverTheme === k && !p.customCoverUrl;
+        return `
+          <button type="button" onclick="chooseCoverPreset('${k}')"
+            class="h-10 rounded-xl ${obj.cls} border-2 px-2.5 flex items-center justify-between text-xs font-bold text-white ${active ? 'border-amber-400 shadow' : 'border-white/10'}">
+            <span>${obj[lang]}</span>
+            ${locked ? '<span>🔒</span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      const customCoverBox = document.getElementById('editor-custom-cover-box');
+      if (vip) {
+        customCoverBox.innerHTML = `
+          <label class="w-full cursor-pointer py-2.5 mt-2 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/40 text-xs font-extrabold text-amber-200 flex items-center justify-center gap-1.5 active:scale-95 transition shadow">
+            🖼️ <span>${lang === 'ru' ? 'Загрузить свою обложку (Фото / GIF)' : 'Завантажити свою обкладинку (Фото / GIF)'}</span>
+            <input type="file" accept="image/*" class="hidden" onchange="onCustomCoverFileChange(event)" />
+          </label>
+        `;
+      } else {
+        customCoverBox.innerHTML = `
+          <div onclick="closeModal('profile-editor-modal'); openDonateModal()" class="cursor-pointer mt-2 p-2.5 rounded-xl bg-amber-500/15 border border-amber-400/35 flex items-center justify-between gap-2 shadow">
+            <div class="text-[11px] text-amber-200 font-bold">
+              🔒 ${tr('vip_only_cover_msg')}
+            </div>
+            <span class="shrink-0 px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-black text-[10px]">
+              VIP
+            </span>
+          </div>
+        `;
+      }
+
+      document.getElementById('profile-editor-modal').classList.remove('hidden');
+    }
+
+    function chooseAvatarRing(key) {
+      const obj = AVATAR_RINGS[key];
+      if (!obj) return;
+      if (obj.vip && !hasVip()) {
+        closeModal('profile-editor-modal');
+        haptic('warning');
+        return openDonateModal();
+      }
+      state.profile.avatarRing = key;
+      openProfileEditor();
+      renderProfileTab();
+    }
+
+    function chooseCoverPreset(key) {
+      const obj = COVER_THEMES[key];
+      if (!obj) return;
+      if (obj.vip && !hasVip()) {
+        closeModal('profile-editor-modal');
+        haptic('warning');
+        return openDonateModal();
+      }
+      state.profile.coverTheme = key;
+      state.profile.customCoverUrl = '';
+      openProfileEditor();
+      renderProfileTab();
+    }
+
+    function onAvatarFileChange(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.profile.avatarUrl = reader.result;
+        saveState();
+        renderProfileTab();
+        haptic('success');
+        showToast(state.lang === 'ru' ? '📷 Аватар обновлён!' : '📷 Аватар оновлено!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function onCustomCoverFileChange(e) {
+      if (!hasVip()) {
+        haptic('error');
+        return showToast(tr('vip_only_cover_msg'), 'error');
+      }
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.profile.customCoverUrl = reader.result;
+        saveState();
+        renderProfileTab();
+        haptic('success');
+        showToast(state.lang === 'ru' ? '🖼️ Своя обложка установлена!' : '🖼️ Свою обкладинку встановлено!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveProfileChanges() {
+      state.profile.name = (document.getElementById('ed-name-inp').value.trim() || 'Sqwizzy_Player').slice(0, 22);
+      state.profile.clanTag = (document.getElementById('ed-tag-inp').value.trim() || '[UA]').slice(0, 10);
+      state.profile.bio = (document.getElementById('ed-bio-inp').value.trim() || '...').slice(0, 160);
+      saveState();
+      closeModal('profile-editor-modal');
+      haptic('success');
+      renderProfileTab();
+      showToast(state.lang === 'ru' ? '✅ Профиль сохранён!' : '✅ Профіль збережено!', 'success');
+    }
+
+    function openBadgePickerModal() {
+      haptic('light');
+      const lang = state.lang;
+      const unlockedAll = Boolean(state.random18Unlocked);
+      const grid = document.getElementById('badge-picker-grid');
+      if (!grid) return;
+
+      grid.innerHTML = RANDOM18_BADGES.map(b => {
+        const locked = !b.free && !unlockedAll;
+        const isPrimary = state.profile.primaryBadge === b.id;
+        const inShowcase = (state.profile.showcaseBadges || []).includes(b.id);
+
+        const cardCls = isPrimary
+          ? 'bg-amber-500/20 border-amber-400'
+          : (locked ? 'bg-slate-950/70 border-white/10 opacity-80' : 'tg-elevated');
+        const lockBadge = locked ? '<span class="absolute -top-1 -right-2 text-[10px]">🔒</span>' : '';
+        const packBtnLabel = lang === 'ru' ? 'В пак за 75 ₴' : 'У пак за 75 ₴';
+        const nickBtnLabel = lang === 'ru' ? (isPrimary ? '★ Ник' : 'К нику') : (isPrimary ? '★ Нік' : 'До ніку');
+        const slotBtnLabel = lang === 'ru' ? (inShowcase ? '✓ Слот' : 'В слот') : (inShowcase ? '✓ Слот' : 'У слот');
+
+        const actionHtml = locked
+          ? '<button onclick="closeModal(\'badge-picker-modal\'); openDonateModal()" class="w-full py-1.5 rounded-lg bg-amber-400 text-slate-950 font-black text-[10px]">🔥 ' + packBtnLabel + '</button>'
+          : '<div class="grid grid-cols-2 gap-1 w-full">' +
+              '<button onclick="equipPrimaryBadge(\'' + b.id + '\')" class="py-1 rounded-lg text-[9px] font-extrabold ' + (isPrimary ? 'bg-amber-400 text-slate-950' : 'bg-slate-900 text-slate-200') + '">' + nickBtnLabel + '</button>' +
+              '<button onclick="toggleShowcaseBadge(\'' + b.id + '\')" class="py-1 rounded-lg text-[9px] font-extrabold ' + (inShowcase ? 'bg-emerald-500 text-slate-950' : 'bg-slate-900 text-slate-200') + '">' + slotBtnLabel + '</button>' +
+            '</div>';
+
+        return (
+          '<div class="p-2.5 rounded-2xl border ' + cardCls + ' flex flex-col items-center text-center space-y-2">' +
+            '<div class="relative">' +
+              getRandom18BadgeSVG(b.id, 'w-9 h-9') +
+              lockBadge +
+            '</div>' +
+            '<div class="text-[11px] font-extrabold text-white truncate w-full">' + b[lang] + '</div>' +
+            actionHtml +
+          '</div>'
+        );
+      }).join('');
+
+      document.getElementById('badge-picker-modal').classList.remove('hidden');
+    }
+
+    function equipPrimaryBadge(bId) {
+      state.profile.primaryBadge = bId;
+      saveState();
+      haptic('success');
+      openBadgePickerModal();
+      renderProfileTab();
+      showToast(state.lang === 'ru' ? '⭐ Бейдж закреплён за ником!' : '⭐ Бейдж закріплено за ніком!', 'success');
+    }
+
+    function toggleShowcaseBadge(bId) {
+      if (!state.profile.showcaseBadges) state.profile.showcaseBadges = [];
+      const idx = state.profile.showcaseBadges.indexOf(bId);
+      if (idx > -1) {
+        if (state.profile.showcaseBadges.length <= 1) {
+          return showToast(state.lang === 'ru' ? 'Нужен хотя бы 1 бейдж' : 'Потрібен хоча б 1 бейдж', 'warning');
+        }
+        state.profile.showcaseBadges.splice(idx, 1);
+      } else {
+        if (state.profile.showcaseBadges.length >= 3) {
+          state.profile.showcaseBadges[2] = bId;
+        } else {
+          state.profile.showcaseBadges.push(bId);
+        }
+      }
+      saveState();
+      haptic('selection');
+      openBadgePickerModal();
+      renderProfileTab();
+    }
+
+    // ---------------------------------------------------------
+    // 10. TACTILE 2.5D AUTUMN FARM SYSTEM
+    // ---------------------------------------------------------
+    function renderFarmToolTray() {
+      const tray = document.getElementById('farm-tool-tray');
+      if (!tray) return;
+      const lang = state.lang;
+      const selected = state.farm.selectedTool;
+
+      let html = `
+        <button onclick="selectFarmTool('water')"
+          class="shrink-0 px-3 py-2 rounded-xl flex items-center gap-1.5 border text-xs font-bold transition active:scale-95 ${selected === 'water' ? 'bg-sky-500/30 border-sky-400 text-white shadow' : 'bg-black/30 border-amber-400/20 text-orange-200/80'}">
+          <span>🚿</span> <span>${tr('watering_can_word')}</span>
+        </button>
+      `;
+
+      html += Object.values(FARM_CROPS).map(crop => {
+        const isSel = selected === crop.id;
+        const name = lang === 'ru' ? crop.ru : crop.ua;
+        const timeStr = formatShortCropTime(crop.timeSec);
+        return `
+          <button onclick="selectFarmTool('${crop.id}')"
+            class="shrink-0 px-3 py-2 rounded-xl flex items-center gap-2 border text-xs font-bold transition active:scale-95 ${isSel ? 'bg-amber-400/30 border-amber-400 text-white shadow' : 'bg-black/30 border-amber-400/20 text-orange-200/80'}">
+            <span class="text-base">${crop.emoji}</span>
+            <div class="text-left leading-tight">
+              <div>${name}</div>
+              <div class="text-[9px] text-orange-300/70 font-mono">${timeStr} • ${crop.cost} SC</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      tray.innerHTML = html;
+    }
+
+    function selectFarmTool(toolId) {
+      state.farm.selectedTool = toolId;
+      haptic('selection');
+      renderFarmToolTray();
+      const hint = document.getElementById('farm-active-tool-hint');
+      if (hint) {
+        if (toolId === 'water') hint.textContent = state.lang === 'ru' ? '🚿 Выбрана лейка' : '🚿 Вибрано лійку';
+        else {
+          const c = FARM_CROPS[toolId];
+          if (c) hint.textContent = state.lang === 'ru' ? `🌾 Семена: ${c.ru}` : `🌾 Насіння: ${c.ua}`;
+        }
+      }
+    }
+
+    function formatShortCropTime(sec) {
+      const lang = state.lang || 'ru';
+      const mins = Math.round(sec / 60);
+      if (mins < 60) return lang === 'ru' ? `${mins}м` : `${mins}хв`;
+      const hrs = (sec / 3600).toFixed(sec % 3600 === 0 ? 0 : 1);
+      return lang === 'ru' ? `${hrs}ч` : `${hrs}год`;
+    }
+
+    function renderFarmBeds() {
+      const grid = document.getElementById('farm-beds-grid');
+      if (!grid) return;
+      const lang = state.lang;
+      const now = Date.now();
+
+      // Update XP bar
+      const xpNeeded = state.farm.level * 100;
+      const xpPct = Math.min(100, Math.round((state.farm.xp / xpNeeded) * 100));
+      document.getElementById('farm-xp-fill').style.width = `${xpPct}%`;
+      document.getElementById('farm-xp-lbl').textContent = `${state.farm.xp}/${xpNeeded} XP`;
+      document.getElementById('farm-level-title').textContent = lang === 'ru'
+        ? `Осенняя ферма • Ур. ${state.farm.level}`
+        : `Осіння ферма • Рів. ${state.farm.level}`;
+
+      // Update Barn pill count
+      const totalBarnItems = Object.values(state.farm.barn).reduce((a, b) => a + b, 0);
+      document.getElementById('barn-count-pill').textContent = totalBarnItems;
+      document.getElementById('farm-vip-bonus-pill').className = hasVip() ? 'text-[9px] font-black bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded' : 'hidden';
+
+      grid.innerHTML = state.farm.beds.map((bed, idx) => {
+        if (!bed.unlocked) {
+          return `
+            <div onclick="unlockBed(${idx})" class="soil-bed soil-locked h-28 rounded-2xl p-3 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 transition">
+              <span class="text-2xl mb-1">🔒</span>
+              <div class="text-xs font-extrabold text-amber-200">${bed.cost} SC</div>
+              <div class="text-[9px] text-orange-200/80 mt-0.5" data-i18n="locked_bed_lbl">Открыть грядку</div>
+            </div>
+          `;
+        }
+
+        if (!bed.cropId) {
+          return `
+            <div onclick="interactBed(${idx})" class="soil-bed soil-dry h-28 rounded-2xl p-3 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 transition">
+              <span class="text-2xl mb-1 opacity-70">🌱</span>
+              <div class="text-[10px] font-extrabold text-amber-100" data-i18n="empty_soil_hint">Высыпать семена</div>
+              <div class="text-[9px] text-orange-200/70 mt-0.5">Грядка #${bed.id}</div>
+            </div>
+          `;
+        }
+
+        const crop = FARM_CROPS[bed.cropId];
+        const elapsed = Math.floor((now - bed.plantedAt) / 1000);
+        const left = bed.durationSec - elapsed;
+        const isReady = left <= 0;
+
+        let bedBg = bed.watered ? 'soil-wet' : 'soil-dry';
+        let centerContent = '';
+
+        if (isReady) {
+          centerContent = `
+            <div class="plant-ripe text-3xl my-0.5">${crop.emoji}</div>
+            <div class="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[10px] shadow" data-i18n="ready_collect_hint">Собрать!</div>
+          `;
+        } else {
+          const progress = Math.min(100, Math.round((elapsed / bed.durationSec) * 100));
+          const timeStr = formatFarmDuration(left);
+          const stageIcon = progress < 40 ? '🌱' : progress < 80 ? '🌿' : crop.emoji;
+          centerContent = `
+            <div class="plant-sway text-2xl my-0.5">${stageIcon}</div>
+            <div class="w-20 h-1.5 bg-black/40 rounded-full overflow-hidden my-1">
+              <div class="h-full bg-amber-400 rounded-full" style="width: ${progress}%"></div>
+            </div>
+            <div class="text-[10px] font-mono text-amber-200">${timeStr}</div>
+          `;
+        }
+
+        return `
+          <div onclick="interactBed(${idx})" class="soil-bed ${bedBg} h-28 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 transition shadow">
+            ${centerContent}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatFarmDuration(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const m = Math.floor(s / 60);
+      const rem = s % 60;
+      return `${String(m).padStart(2, '0')}:${String(rem).padStart(2, '0')}`;
+    }
+
+    function unlockBed(idx) {
+      const bed = state.farm.beds[idx];
+      if (state.balance < bed.cost) {
+        haptic('error');
+        return showToast(tr('err_no_sc'), 'error');
+      }
+      state.balance -= bed.cost;
+      bed.unlocked = true;
+      logTx('Открытие грядки', 'Відкриття грядки', `-${bed.cost} SC`);
+      saveState();
+      haptic('success');
+      refreshAllUI();
+      showToast(state.lang === 'ru' ? '🌾 Грядка открыта!' : '🌾 Грядку відкрито!', 'success');
+    }
+
+    function interactBed(idx) {
+      const bed = state.farm.beds[idx];
+      const now = Date.now();
+
+      if (!bed.cropId) {
+        const tool = state.farm.selectedTool;
+        if (tool === 'water') {
+          bed.watered = true;
+          haptic('light');
+          saveState();
+          renderFarmBeds();
+          return showToast(state.lang === 'ru' ? '🚿 Грядка полита!' : '🚿 Грядку полити!', 'info');
+        }
+
+        const crop = FARM_CROPS[tool];
+        if (!crop) return;
+
+        if (state.balance < crop.cost) {
+          haptic('error');
+          return showToast(tr('err_no_sc'), 'error');
+        }
+
+        state.balance -= crop.cost;
+        bed.cropId = crop.id;
+        bed.plantedAt = now;
+        bed.durationSec = crop.timeSec;
+        bed.watered = true;
+        logTx(`Посадка: ${crop.ru}`, `Посадка: ${crop.ua}`, `-${crop.cost} SC`);
+        saveState();
+        haptic('success');
+        refreshAllUI();
+        showToast(state.lang === 'ru' ? `🌱 Посажено: ${crop.ru}` : `🌱 Посаджено: ${crop.ua}`, 'success');
+        return;
+      }
+
+      // Check if ready
+      const elapsed = Math.floor((now - bed.plantedAt) / 1000);
+      if (elapsed >= bed.durationSec) {
+        const cropId = bed.cropId;
+        const crop = FARM_CROPS[cropId];
+
+        if (!state.farm.barn[cropId]) state.farm.barn[cropId] = 0;
+        state.farm.barn[cropId] += 1;
+
+        // XP
+        state.farm.xp += crop.xp;
+        const xpNeeded = state.farm.level * 100;
+        if (state.farm.xp >= xpNeeded) {
+          state.farm.level += 1;
+          state.farm.xp -= xpNeeded;
+          fireConfetti();
+          showToast(state.lang === 'ru' ? `🎉 Новый уровень фермы: ${state.farm.level}!` : `🎉 Новий рівень ферми: ${state.farm.level}!`, 'success');
+        }
+
+        // Clear bed
+        bed.cropId = null;
+        bed.plantedAt = null;
+        bed.durationSec = null;
+        bed.watered = false;
+
+        saveState();
+        haptic('success');
+        refreshAllUI();
+        showToast(state.lang === 'ru' ? `🧺 Урожай убран в амбар: ${crop.emoji}` : `🧺 Врожай зібрано в амбар: ${crop.emoji}`, 'success');
+      } else {
+        haptic('light');
+        showToast(state.lang === 'ru' ? '⏳ Урожай ещё растет...' : '⏳ Врожай ще росте...', 'info');
+      }
+    }
+
+    function openBarnModal() {
+      haptic('light');
+      const container = document.getElementById('barn-items-container');
+      const lang = state.lang;
+      const barn = state.farm.barn || {};
+      let totalValue = 0;
+
+      let html = '';
+      const entries = Object.entries(barn).filter(([_, qty]) => qty > 0);
+
+      if (entries.length === 0) {
+        html = `<div class="text-center py-6 text-xs text-orange-200/70" data-i18n="barn_empty_msg">${tr('barn_empty_msg')}</div>`;
+      } else {
+        html = entries.map(([cId, qty]) => {
+          const crop = FARM_CROPS[cId];
+          if (!crop) return '';
+          const vipMult = hasVip() ? 1.25 : 1.0;
+          const sellPrice = Math.round(crop.sell * vipMult);
+          const subTotal = sellPrice * qty;
+          totalValue += subTotal;
+          const name = lang === 'ru' ? crop.ru : crop.ua;
+
+          return `
+            <div class="tg-elevated rounded-xl p-3 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="text-2xl">${crop.emoji}</span>
+                <div>
+                  <div class="text-xs font-extrabold text-white">${name} x${qty}</div>
+                  <div class="text-[10px] text-amber-300 font-mono">+${subTotal} SC (${sellPrice} SC/шт)</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      container.innerHTML = html;
+      document.getElementById('barn-total-sc').textContent = totalValue;
+      document.getElementById('barn-modal').classList.remove('hidden');
+    }
+
+    function sellAllBarnHarvest() {
+      const barn = state.farm.barn || {};
+      let totalValue = 0;
+
+      const vipMult = hasVip() ? 1.25 : 1.0;
+      Object.entries(barn).forEach(([cId, qty]) => {
+        const crop = FARM_CROPS[cId];
+        if (crop && qty > 0) {
+          totalValue += Math.round(crop.sell * vipMult) * qty;
+        }
+      });
+
+      if (totalValue <= 0) {
+        haptic('warning');
+        return showToast(state.lang === 'ru' ? '🧺 Амбар пуст!' : '🧺 Амбар порожній!', 'warning');
+      }
+
+      state.balance += totalValue;
+      state.farm.barn = {};
+      logTx('Продажа урожая', 'Продаж врожаю', `+${totalValue} SC`);
+      saveState();
+      closeModal('barn-modal');
+      fireConfetti();
+      haptic('success');
+      refreshAllUI();
+      showToast(state.lang === 'ru' ? `💰 Продано урожая на +${totalValue} SC!` : `💰 Продано врожаю на +${totalValue} SC!`, 'success');
+    }
+
+    // ---------------------------------------------------------
+    // 11. MULTIPLAYER PvP (DICE & COINFLIP)
+    // ---------------------------------------------------------
+    function inviteTelegramFriend() {
+      const text = encodeURIComponent(
+        state.lang === 'ru'
+          ? '⚔️ Брось мне вызов в дуэль костей в Sqwizzy Bot!'
+          : '⚔️ Кинь мені виклик у дуель костей у Sqwizzy Bot!'
+      );
+      const url = `https://t.me/share/url?url=https://t.me/sqwizzy_bot&text=${text}`;
+      if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
+      else window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function selectDiceBet(amt) {
+      selectedDiceBet = amt;
+      haptic('selection');
+      [10, 25, 50, 100].forEach(b => {
+        const btn = document.getElementById(`dice-bet-${b}`);
+        if (!btn) return;
+        if (b === amt) {
+          btn.className = 'dice-bet-btn py-2 rounded-xl bg-amber-400 text-slate-950 font-mono font-extrabold text-xs transition shadow';
+        } else {
+          btn.className = 'dice-bet-btn py-2 rounded-xl tg-elevated text-slate-200 font-mono font-bold text-xs transition';
+        }
+      });
+    }
+
+    function playDiceDuel() {
+      if (isDiceBusy) return;
+      if (state.chips < selectedDiceBet) {
+        haptic('error');
+        return showToast(tr('err_no_chips'), 'error');
+      }
+
+      state.chips -= selectedDiceBet;
+      isDiceBusy = true;
+      haptic('medium');
+
+      const p1Icon = document.getElementById('dice-p1-icon');
+      const p2Icon = document.getElementById('dice-p2-icon');
+      const p1Val = document.getElementById('dice-p1-val');
+      const p2Val = document.getElementById('dice-p2-val');
+
+      p1Icon.className = 'text-3xl my-1 dice-rolling';
+      p2Icon.className = 'text-3xl my-1 dice-rolling';
+      p1Val.textContent = '...';
+      p2Val.textContent = '...';
+
+      setTimeout(() => {
+        const roll1 = Math.floor(Math.random() * 6) + 1;
+        const roll2 = Math.floor(Math.random() * 6) + 1;
+
+        p1Icon.className = 'text-3xl my-1';
+        p2Icon.className = 'text-3xl my-1';
+
+        const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+        p1Icon.textContent = faces[roll1 - 1];
+        p2Icon.textContent = faces[roll2 - 1];
+        p1Val.textContent = roll1;
+        p2Val.textContent = roll2;
+
+        isDiceBusy = false;
+        if (roll1 > roll2) {
+          const prize = selectedDiceBet * 2;
+          state.chips += prize;
+          state.pvpWins += 1;
+          logTx('PvP Кости (Победа)', 'PvP Кості (Перемога)', `+${prize} 🎰`);
+          saveState();
+          fireConfetti();
+          haptic('success');
+          showToast(state.lang === 'ru' ? `🎉 Победа! Вы выиграли ${prize} 🎰` : `🎉 Перемога! Ви виграли ${prize} 🎰`, 'success');
+        } else if (roll1 < roll2) {
+          logTx('PvP Кости (Поражение)', 'PvP Кості (Поразка)', `-${selectedDiceBet} 🎰`);
+          saveState();
+          haptic('error');
+          showToast(state.lang === 'ru' ? '😢 Поражение в костях' : '😢 Поразка в костях', 'error');
+        } else {
+          state.chips += selectedDiceBet;
+          saveState();
+          haptic('warning');
+          showToast(state.lang === 'ru' ? '🤝 Ничья! Ставка возвращена' : '🤝 Нічия! Ставку повернуто', 'info');
+        }
+        refreshAllUI();
+      }, 900);
+    }
+
+    function renderCoinflipRooms() {
+      const container = document.getElementById('cf-rooms-container');
+      if (!container) return;
+      const lang = state.lang;
+
+      container.innerHTML = cfRooms.map(room => `
+        <div class="tg-elevated rounded-xl p-2.5 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">${room.side === 'heads' ? '🦅' : '🪙'}</span>
+            <div>
+              <div class="text-xs font-bold text-white">${room.host}</div>
+              <div class="text-[10px] font-mono text-amber-300">Ставка: ${room.bet} SC</div>
+            </div>
+          </div>
+          <button onclick="joinCoinflipRoom(${room.id})" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-extrabold text-xs active:scale-95 shadow">
+            ${lang === 'ru' ? 'Войти' : 'Увійти'}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function createCoinflipRoom() {
+      const side = document.getElementById('cf-side-sel').value;
+      const bet = parseInt(document.getElementById('cf-bet-inp').value, 10) || 15;
+
+      if (state.balance < bet) {
+        haptic('error');
+        return showToast(tr('err_no_sc'), 'error');
+      }
+
+      state.balance -= bet;
+      cfRooms.unshift({
+        id: Date.now(),
+        host: state.profile.name,
+        side: side,
+        bet: bet
+      });
+      if (cfRooms.length > 5) cfRooms.pop();
+
+      logTx('Создание комнаты Coinflip', 'Створення кімнати Coinflip', `-${bet} SC`);
+      saveState();
+      haptic('success');
+      renderCoinflipRooms();
+      refreshAllUI();
+      showToast(state.lang === 'ru' ? '🪙 Комната Орёл/Решка создана!' : '🪙 Кімнату Орел/Решка створено!', 'success');
+    }
+
+    function joinCoinflipRoom(roomId) {
+      const idx = cfRooms.findIndex(r => r.id === roomId);
+      if (idx === -1) return;
+      const room = cfRooms[idx];
+
+      if (state.balance < room.bet) {
+        haptic('error');
+        return showToast(tr('err_no_sc'), 'error');
+      }
+
+      state.balance -= room.bet;
+      cfRooms.splice(idx, 1);
+
+      const won = Math.random() < 0.5;
+      if (won) {
+        const prize = room.bet * 2;
+        state.balance += prize;
+        state.pvpWins += 1;
+        logTx('Coinflip (Победа)', 'Coinflip (Перемога)', `+${prize} SC`);
+        saveState();
+        fireConfetti();
+        haptic('success');
+        showToast(state.lang === 'ru' ? `🎉 Вы выиграли в Coinflip +${prize} SC!` : `🎉 Ви виграли в Coinflip +${prize} SC!`, 'success');
+      } else {
+        logTx('Coinflip (Поражение)', 'Coinflip (Поразка)', `-${room.bet} SC`);
+        saveState();
+        haptic('error');
+        showToast(state.lang === 'ru' ? '😢 Соперник победил в Coinflip' : '😢 Суперник переміг у Coinflip', 'error');
+      }
+      renderCoinflipRooms();
+      refreshAllUI();
+    }
+
+    // ---------------------------------------------------------
+    // 12. CASINO (ROULETTE & POKER) & EXCHANGE
+    // ---------------------------------------------------------
+    function buildEuropeanWheelSVG() {
+      const svg = document.getElementById('roulette-wheel-svg');
+      if (!svg) return;
+      const r = 90;
+      const cx = 100;
+      const cy = 100;
+      const total = EURO_WHEEL_NUMBERS.length;
+      const angleStep = 360 / total;
+
+      let html = `<circle cx="${cx}" cy="${cy}" r="${r + 6}" fill="#4a1c10" stroke="#f59e0b" stroke-width="3"/>`;
+
+      EURO_WHEEL_NUMBERS.forEach((num, i) => {
+        const startAngle = i * angleStep - 90;
+        const endAngle = (i + 1) * angleStep - 90;
+        const x1 = cx + r * Math.cos(Math.PI * startAngle / 180);
+        const y1 = cy + r * Math.sin(Math.PI * startAngle / 180);
+        const x2 = cx + r * Math.cos(Math.PI * endAngle / 180);
+        const y2 = cy + r * Math.sin(Math.PI * endAngle / 180);
+        const largeArc = angleStep > 180 ? 1 : 0;
+
+        const col = getEuroColor(num);
+        let fillColor = '#10b981';
+        if (col === 'red') fillColor = '#dc2626';
+        else if (col === 'black') fillColor = '#1e293b';
+
+        const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+
+        const midAngle = startAngle + angleStep / 2;
+        const textRadius = r * 0.74;
+        const tx = cx + textRadius * Math.cos(Math.PI * midAngle / 180);
+        const ty = cy + textRadius * Math.sin(Math.PI * midAngle / 180);
+
+        html += `
+          <path d="${pathData}" fill="${fillColor}" stroke="#331812" stroke-width="0.8"/>
+          <text x="${tx}" y="${ty}" fill="#ffffff" font-size="7" font-weight="800" text-anchor="middle" dominant-baseline="central" transform="rotate(${midAngle + 90}, ${tx}, ${ty})">${num}</text>
+        `;
+      });
+
+      html += `<circle cx="${cx}" cy="${cy}" r="22" fill="#2b1812" stroke="#f59e0b" stroke-width="2"/>`;
+      svg.innerHTML = html;
+    }
+
+    function setRouletteChipBet(val) {
+      const inp = document.getElementById('roulette-bet-inp');
+      if (val === 'MAX') {
+        inp.value = Math.max(1, state.chips);
+      } else {
+        inp.value = val;
+      }
+      haptic('selection');
+    }
+
+    function spinEuropeanWheel(betType) {
+      if (isWheelSpinning) return;
+      const betAmt = parseInt(document.getElementById('roulette-bet-inp').value, 10) || 10;
+
+      if (state.chips < betAmt) {
+        haptic('error');
+        return showToast(tr('err_no_chips'), 'error');
+      }
+
+      state.chips -= betAmt;
+      isWheelSpinning = true;
+      haptic('medium');
+
+      const status = document.getElementById('roulette-status-pill');
+      status.textContent = tr('spinning_status');
+
+      const winningNum = EURO_WHEEL_NUMBERS[Math.floor(Math.random() * EURO_WHEEL_NUMBERS.length)];
+      const winColor = getEuroColor(winningNum);
+
+      const winningIndex = EURO_WHEEL_NUMBERS.indexOf(winningNum);
+      const anglePerSlice = 360 / EURO_WHEEL_NUMBERS.length;
+      const targetAngle = 360 * 6 + (360 - (winningIndex * anglePerSlice + anglePerSlice / 2));
+
+      wheelRotationDeg = targetAngle;
+      const wrap = document.getElementById('roulette-wheel-svg');
+      wrap.style.transition = 'transform 3.2s cubic-bezier(0.15, 0.85, 0.15, 1)';
+      wrap.style.transform = `rotate(${wheelRotationDeg}deg)`;
+
+      setTimeout(() => {
+        isWheelSpinning = false;
+        status.textContent = `${winningNum} (${winColor.toUpperCase()})`;
+
+        let won = false;
+        let mult = 0;
+
+        if (betType === 'red' && winColor === 'red') { won = true; mult = 2; }
+        else if (betType === 'black' && winColor === 'black') { won = true; mult = 2; }
+        else if (betType === 'green' && winColor === 'green') { won = true; mult = 14; }
+
+        if (won) {
+          const prize = betAmt * mult;
+          state.chips += prize;
+          logTx(`Рулетка (${winningNum} ${winColor})`, `Рулетка (${winningNum} ${winColor})`, `+${prize} 🎰`);
+          saveState();
+          fireConfetti();
+          haptic('success');
+          showToast(state.lang === 'ru' ? `🎉 Выпало ${winningNum}! Выигрыш +${prize} 🎰` : `🎉 Випало ${winningNum}! Виграш +${prize} 🎰`, 'success');
+        } else {
+          logTx(`Рулетка (${winningNum} ${winColor})`, `Рулетка (${winningNum} ${winColor})`, `-${betAmt} 🎰`);
+          saveState();
+          haptic('error');
+          showToast(state.lang === 'ru' ? `😢 Выпало ${winningNum} (${winColor}). Проигрыш` : `😢 Випало ${winningNum} (${winColor}). Програш`, 'error');
+        }
+        refreshAllUI();
+      }, 3300);
+    }
+
+    function startPokerHand() {
+      if (state.chips < 50) {
+        haptic('error');
+        return showToast(tr('err_no_chips'), 'error');
+      }
+
+      state.chips -= 50;
+      haptic('medium');
+
+      const suits = ['♠', '♥', '♦', '♣'];
+      const ranks = ['10', 'J', 'Q', 'K', 'A'];
+      const boardCards = [
+        { r: 'A', s: '♠' }, { r: 'K', s: '♥' }, { r: 'Q', s: '♦' }, { r: '10', s: '♣' }, { r: 'J', s: '♠' }
+      ];
+      const holeCards = [
+        { r: 'A', s: '♥' }, { r: 'A', s: '♦' }
+      ];
+
+      document.getElementById('poker-board-cards').innerHTML = boardCards.map(c => `
+        <div class="w-9 h-11 rounded-lg bg-slate-900 border border-amber-400/30 flex flex-col items-center justify-center text-xs font-mono font-black text-white">
+          <span>${c.r}</span>
+          <span class="${['♥','♦'].includes(c.s) ? 'text-rose-500' : 'text-slate-200'}">${c.s}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('poker-hole-cards').innerHTML = holeCards.map(c => `
+        <div class="w-9 h-11 rounded-lg bg-amber-500/20 border border-amber-400/40 flex flex-col items-center justify-center text-xs font-mono font-black text-amber-200">
+          <span>${c.r}</span>
+          <span class="${['♥','♦'].includes(c.s) ? 'text-rose-400' : 'text-amber-100'}">${c.s}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('poker-hand-area').classList.remove('hidden');
+      document.getElementById('poker-hand-label').textContent = state.lang === 'ru' ? 'Пара тузов (Full House)' : 'Пара тузів (Full House)';
+
+      const won = Math.random() < 0.52;
+      if (won) {
+        state.chips += 150;
+        logTx('Покер (Победа)', 'Покер (Перемога)', '+150 🎰');
+        saveState();
+        fireConfetti();
+        haptic('success');
+        showToast(state.lang === 'ru' ? '🃏 Вы победили за покерным столом! +150 🎰' : '🃏 Ви перемогли за покерним столом! +150 🎰', 'success');
+      } else {
+        logTx('Покер (Поражение)', 'Покер (Поразка)', '-50 🎰');
+        saveState();
+        haptic('error');
+        showToast(state.lang === 'ru' ? '🃏 Дилер собрал старшую комбинацию' : '🃏 Дилер зібрав старшу комбінацію', 'error');
+      }
+      refreshAllUI();
+    }
+
+    function setExchDirection(dir) {
+      exchDirection = dir;
+      haptic('selection');
+      const btnBuy = document.getElementById('exch-btn-buy');
+      const btnSell = document.getElementById('exch-btn-sell');
+      if (dir === 'buy') {
+        btnBuy.className = 'py-1.5 rounded-lg text-xs font-extrabold bg-amber-400 text-slate-950 transition';
+        btnSell.className = 'py-1.5 rounded-lg text-xs font-bold text-slate-300 transition';
+      } else {
+        btnSell.className = 'py-1.5 rounded-lg text-xs font-extrabold bg-amber-400 text-slate-950 transition';
+        btnBuy.className = 'py-1.5 rounded-lg text-xs font-bold text-slate-300 transition';
+      }
+      refreshExchPreview();
+    }
+
+    function quickExchAmount(amt) {
+      document.getElementById('exch-amount-inp').value = amt;
+      refreshExchPreview();
+      haptic('selection');
+    }
+
+    function refreshExchPreview() {
+      const inp = document.getElementById('exch-amount-inp');
+      const prev = document.getElementById('exch-preview-lbl');
+      if (!inp || !prev) return;
+      const val = parseInt(inp.value, 10) || 0;
+
+      if (exchDirection === 'buy') {
+        prev.textContent = `+${val * 2} 🎰`;
+      } else {
+        prev.textContent = `+${Math.floor(val / 2)} SC`;
+      }
+    }
+
+    function runCurrencyExchange() {
+      const inp = document.getElementById('exch-amount-inp');
+      const val = parseInt(inp.value, 10) || 0;
+      if (val <= 0) return;
+
+      if (exchDirection === 'buy') {
+        if (state.balance < val) {
+          haptic('error');
+          return showToast(tr('err_no_sc'), 'error');
+        }
+        state.balance -= val;
+        const chipsGained = val * 2;
+        state.chips += chipsGained;
+        logTx('Обмен SC → Фишки', 'Обмін SC → Фішки', `-${val} SC / +${chipsGained} 🎰`);
+        saveState();
+        fireConfetti();
+        haptic('success');
+        showToast(state.lang === 'ru' ? `🔄 Успешно обменяв ${val} SC на ${chipsGained} 🎰` : `🔄 Успішно обміняно ${val} SC на ${chipsGained} 🎰`, 'success');
+      } else {
+        if (state.chips < val) {
+          haptic('error');
+          return showToast(tr('err_no_chips'), 'error');
+        }
+        state.chips -= val;
+        const scGained = Math.floor(val / 2);
+        state.balance += scGained;
+        logTx('Обмен Фишки → SC', 'Обмін Фішки → SC', `-${val} 🎰 / +${scGained} SC`);
+        saveState();
+        fireConfetti();
+        haptic('success');
+        showToast(state.lang === 'ru' ? `🔄 Обменяно ${val} 🎰 на +${scGained} SC` : `🔄 Обміняно ${val} 🎰 на +${scGained} SC`, 'success');
+      }
+      refreshAllUI();
+    }
+
+    // ---------------------------------------------------------
+    // 13. WALLET, DONATE, CHECKOUT, PROMOS & MODALS
+    // ---------------------------------------------------------
+    function openWalletModal() {
+      haptic('light');
+      document.getElementById('wm-sc-val').textContent = state.balance;
+      document.getElementById('wm-chips-val').textContent = state.chips;
+      document.getElementById('wm-stars-val').textContent = state.stars;
+
+      const txList = document.getElementById('wallet-tx-list');
+      const lang = state.lang;
+      txList.innerHTML = state.txLog.map(tx => `
+        <div class="tg-elevated rounded-xl p-2 flex items-center justify-between">
+          <span class="text-orange-100">${lang === 'ru' ? tx.ru : tx.ua}</span>
+          <span class="font-mono font-bold text-amber-300">${tx.delta}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('wallet-modal').classList.remove('hidden');
+    }
+
+    function addTelegramStars(amt) {
+      state.stars += amt;
+      logTx('Пополнение Stars', 'Поповнення Stars', `+${amt} ⭐`);
+      saveState();
+      haptic('success');
+      openWalletModal();
+      refreshAllUI();
+      showToast(state.lang === 'ru' ? `⭐ +${amt} Stars зачислены!` : `⭐ +${amt} Stars зараховано!`, 'success');
+    }
+
+    function quickConvert10SC() {
+      if (state.balance < 10) {
+        haptic('error');
+        return showToast(tr('err_no_sc'), 'error');
+      }
+      state.balance -= 10;
+      state.chips += 20;
+      logTx('Быстрый обмен', 'Швидкий обмін', '-10 SC / +20 🎰');
+      saveState();
+      haptic('success');
+      openWalletModal();
+      refreshAllUI();
+      showToast('+20 🎰!', 'success');
+    }
+
+    function openDonateModal() {
+      haptic('light');
+      document.getElementById('dm-sc-txt').textContent = `${state.balance} SC`;
+      document.getElementById('dm-chips-txt').textContent = `${state.chips} 🎰`;
+      document.getElementById('dm-stars-txt').textContent = `${state.stars} ⭐`;
+      document.getElementById('donate-modal').classList.remove('hidden');
+    }
+
+    function openCheckout(itemId, method) {
+      checkoutPayload = { itemId, method };
+      haptic('light');
+
+      const titles = {
+        vip_month: { ru: 'Sqwizzy Autumn VIP', ua: 'Sqwizzy Autumn VIP', sub: '+250 SC, +100 🎰, фото/GIF обложка' },
+        random18_pack: { ru: 'Пак стикеров «RandomEmodj18»', ua: 'Пак стікерів «RandomEmodj18»', sub: 'Все 12 бейджей для профиля' },
+        sc_150: { ru: 'Пакет +150 Sqwizzy Coins', ua: 'Пакет +150 Sqwizzy Coins', sub: 'Игровой запас SC' },
+        sc_500: { ru: 'Пакет +500 Sqwizzy Coins', ua: 'Пакет +500 Sqwizzy Coins', sub: 'Популярный запас SC' },
+        sc_1500: { ru: 'Мега-пак +1500 Sqwizzy Coins', ua: 'Мега-пак +1500 Sqwizzy Coins', sub: 'Максимальный запас SC' }
+      };
+
+      const prices = {
+        vip_month: { stars: 100, uah: 150 },
+        random18_pack: { stars: 50, uah: 75 },
+        sc_150: { stars: 15, uah: 25 },
+        sc_500: { stars: 45, uah: 75 },
+        sc_1500: { stars: 120, uah: 190 }
+      };
+
+      const item = titles[itemId] || { ru: 'Товар', ua: 'Товар', sub: '' };
+      const price = prices[itemId] || { stars: 10, uah: 20 };
+      const lang = state.lang;
+
+      document.getElementById('co-item-title').textContent = lang === 'ru' ? item.ru : item.ua;
+      document.getElementById('co-item-sub').textContent = item.sub;
+      document.getElementById('co-price-badge').textContent = method === 'stars' ? `${price.stars} ⭐` : `${price.uah} ₴`;
+      document.getElementById('co-stars-bal').textContent = `${state.stars} ⭐`;
+
+      const starsBlock = document.getElementById('co-stars-block');
+      const cardBlock = document.getElementById('co-card-block');
+
+      if (method === 'stars') {
+        starsBlock.classList.remove('hidden');
+        cardBlock.classList.add('hidden');
+      } else {
+        starsBlock.classList.add('hidden');
+        cardBlock.classList.remove('hidden');
+      }
+
+      document.getElementById('donate-modal').classList.add('hidden');
+      document.getElementById('checkout-modal').classList.remove('hidden');
+    }
+
+    function payWithTelegramStars() {
+      const prices = { vip_month: 100, random18_pack: 50, sc_150: 15, sc_500: 45, sc_1500: 120 };
+      const cost = prices[checkoutPayload.itemId] || 50;
+
+      if (state.stars < cost) {
+        haptic('error');
+        return showToast(tr('err_no_stars'), 'error');
+      }
+
+      state.stars -= cost;
+      grantPurchasedItem(checkoutPayload.itemId);
+      closeModal('checkout-modal');
+      fireConfetti();
+      haptic('success');
+      showToast(state.lang === 'ru' ? '🎉 Оплата Stars успешна! Зачислено' : '🎉 Оплата Stars успішна! Зараховано', 'success');
+      refreshAllUI();
+    }
+
+    function payWithCardReceipt() {
+      const receipt = document.getElementById('co-receipt-inp').value.trim();
+      if (!receipt) {
+        haptic('warning');
+        return showToast(state.lang === 'ru' ? 'Введите комментарий или время чека' : 'Введіть коментар або час чеку', 'warning');
+      }
+      grantPurchasedItem(checkoutPayload.itemId);
+      closeModal('checkout-modal');
+      fireConfetti();
+      haptic('success');
+      showToast(state.lang === 'ru' ? '✅ Платеж подтвержден администратором!' : '✅ Платіж підтверджено адміністратором!', 'success');
+      refreshAllUI();
+    }
+
+    function grantPurchasedItem(itemId) {
+      if (itemId === 'vip_month') {
+        state.vip.active = true;
+        state.vip.expiresAt = Date.now() + 30 * 24 * 3600 * 1000;
+        state.balance += 250;
+        state.chips += 100;
+        logTx('Активация Sqwizzy VIP', 'Активація Sqwizzy VIP', '+250 SC / +100 🎰');
+      } else if (itemId === 'random18_pack') {
+        state.random18Unlocked = true;
+        logTx('Пак RandomEmodj18', 'Пак RandomEmodj18', 'Все бейджи ⭐');
+      } else if (itemId === 'sc_150') {
+        state.balance += 150;
+        logTx('Покупка SC', 'Купівля SC', '+150 SC');
+      } else if (itemId === 'sc_500') {
+        state.balance += 500;
+        logTx('Покупка SC', 'Купівля SC', '+500 SC');
+      } else if (itemId === 'sc_1500') {
+        state.balance += 1500;
+        logTx('Покупка SC', 'Купівля SC', '+1500 SC');
+      }
+      saveState();
+    }
+
+    function copyCardToClipboard() {
+      const card = '4874 0700 6225 9666';
+      const ta = document.createElement('textarea');
+      ta.value = card;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      haptic('success');
+      showToast(state.lang === 'ru' ? '📋 Номер карты скопирован!' : '📋 Номер картки скопійовано!', 'success');
+    }
+
+    function openMonobankLink() {
+      const url = 'https://send.monobank.ua/';
+      if (tg && tg.openTelegramLink) tg.openTelegramLink(url);
+      else window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function openPromoModal() {
+      haptic('light');
+      document.getElementById('promo-modal').classList.remove('hidden');
+    }
+
+    function activatePromoCode() {
+      const code = (document.getElementById('promo-code-inp').value.trim()).toLowerCase();
+      if (!code) return;
+
+      if (state.usedPromos.includes(code)) {
+        haptic('warning');
+        return showToast(state.lang === 'ru' ? '⚠️ Этот промокод уже активирован' : '⚠️ Цей промокод вже активовано', 'warning');
+      }
+
+      if (code === '#autumn' || code === 'autumn') {
+        state.balance += 100;
+        state.usedPromos.push(code);
+        logTx('Промокод #autumn', 'Промокод #autumn', '+100 SC');
+        saveState();
+        closeModal('promo-modal');
+        fireConfetti();
+        haptic('success');
+        showToast(state.lang === 'ru' ? '🎁 Промокод активирован: +100 SC!' : '🎁 Промокод активовано: +100 SC!', 'success');
+        refreshAllUI();
+      } else if (code === 'vip2026') {
+        state.balance += 150;
+        state.chips += 50;
+        state.usedPromos.push(code);
+        logTx('Промокод VIP2026', 'Промокод VIP2026', '+150 SC / +50 🎰');
+        saveState();
+        closeModal('promo-modal');
+        fireConfetti();
+        haptic('success');
+        showToast(state.lang === 'ru' ? '🎁 Промокод VIP2026 активирован!' : '🎁 Промокод VIP2026 активовано!', 'success');
+        refreshAllUI();
+      } else {
+        haptic('error');
+        showToast(state.lang === 'ru' ? '❌ Неверный промокод' : '❌ Невірний промокод', 'error');
+      }
+    }
+
+    function openSupportModal() {
+      haptic('light');
+      document.getElementById('support-modal').classList.remove('hidden');
+    }
+
+    function submitDevTicket() {
+      const subj = document.getElementById('sup-subj-inp').value.trim();
+      const msg = document.getElementById('sup-msg-inp').value.trim();
+      if (!subj || !msg) {
+        haptic('warning');
+        return showToast(state.lang === 'ru' ? 'Заполните тему и сообщение' : 'Заповніть тему та повідомлення', 'warning');
+      }
+      closeModal('support-modal');
+      haptic('success');
+      showToast(state.lang === 'ru' ? '🚀 Сообщение отправлено Akiyama_Wizard!' : '🚀 Повідомлення надіслано Akiyama_Wizard!', 'success');
+      document.getElementById('sup-subj-inp').value = '';
+      document.getElementById('sup-msg-inp').value = '';
+    }
+
+    function closeModal(id) {
+      haptic('light');
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // ---------------------------------------------------------
+    // 14. LEADERBOARD & REFERRALS DATA
+    // ---------------------------------------------------------
+    let leaderboardSortMode = 'sc';
+
+    const COMMUNITY_PLAYERS = [
+      {
+        id: 'akiyama',
+        name: 'Akiyama_Wizard',
+        handle: '@akiyama_dev',
+        clanTag: '[DEV]',
+        balance: 9450,
+        chips: 1200,
+        farmLvl: 18,
+        farmXp: 420,
+        pvpWins: 64,
+        rep: 318,
+        vip: true,
+        ring: 'gold',
+        cover: 'cover-vip-gold',
+        badge: 'crown',
+        showcase: ['crown', 'flame', 'diamond'],
+        bioRu: 'Создатель Sqwizzy Bot. Осенний релиз 🍁',
+        bioUa: 'Творець Sqwizzy Bot. Осінній реліз 🍁'
+      },
+      {
+        id: 'nolan',
+        name: 'Nolan_Lorenzzi',
+        handle: '@nolan_lorenzzi',
+        clanTag: '[VIP]',
+        balance: 4820,
+        chips: 640,
+        farmLvl: 14,
+        farmXp: 190,
+        pvpWins: 41,
+        rep: 154,
+        vip: true,
+        ring: 'crimson',
+        cover: 'cover-crimson',
+        badge: 'diamond',
+        showcase: ['diamond', 'dice', 'laser'],
+        bioRu: 'Топ-донатер и любитель Техасского Холдема ♠️',
+        bioUa: 'Топ-донатер і фанат Техаського Холдему ♠️'
+      },
+      {
+        id: 'kira',
+        name: 'Kira_Autumn',
+        handle: '@kira_vibe',
+        clanTag: '[LEAF]',
+        balance: 3190,
+        chips: 310,
+        farmLvl: 16,
+        farmXp: 280,
+        pvpWins: 29,
+        rep: 112,
+        vip: true,
+        ring: 'emerald',
+        cover: 'cover-emerald',
+        badge: 'heart',
+        showcase: ['heart', 'alien', 'eightball'],
+        bioRu: 'Выращиваю арбузы и клубнику 🍓🍂',
+        bioUa: 'Вирощую кавуни та полуницю 🍓🍂'
+      },
+      {
+        id: 'dante',
+        name: 'Dante_Shadow',
+        handle: '@dante_ua',
+        clanTag: '[UA]',
+        balance: 1840,
+        chips: 220,
+        farmLvl: 9,
+        farmXp: 95,
+        pvpWins: 33,
+        rep: 76,
+        vip: false,
+        ring: 'pulse',
+        cover: 'cover-midnight',
+        badge: 'skull',
+        showcase: ['skull', 'fang', 'mask'],
+        bioRu: 'Ищу соперников в кости на 100 фишек 🎲',
+        bioUa: 'Шукаю суперників у кості на 100 фішок 🎲'
+      }
+    ];
+
+    function getAllLeaderboardPlayers() {
+      const me = {
+        id: 'me',
+        isMe: true,
+        name: state.profile.name,
+        handle: state.profile.handle,
+        clanTag: state.profile.clanTag,
+        balance: state.balance,
+        chips: state.chips,
+        farmLvl: state.farm.level,
+        farmXp: state.farm.xp,
+        pvpWins: state.pvpWins,
+        rep: state.profile.rep,
+        vip: hasVip(),
+        ring: state.profile.avatarRing || 'standard',
+        cover: (COVER_THEMES[state.profile.coverTheme] || COVER_THEMES.midnight).cls,
+        avatarUrl: state.profile.avatarUrl || '',
+        badge: state.profile.primaryBadge || 'skull',
+        showcase: state.profile.showcaseBadges || ['skull', 'flame', 'eightball'],
+        bioRu: state.profile.bio,
+        bioUa: state.profile.bio
+      };
+      return [me, ...COMMUNITY_PLAYERS];
+    }
+
+    function openLeaderboardModal() {
+      haptic('light');
+      renderLeaderboard();
+      document.getElementById('leaderboard-modal').classList.remove('hidden');
+    }
+
+    function switchLeaderboardMode(mode) {
+      leaderboardSortMode = mode;
+      haptic('selection');
+      const btnSc = document.getElementById('lb-tab-sc');
+      const btnFarm = document.getElementById('lb-tab-farm');
+      if (mode === 'sc') {
+        btnSc.className = 'py-1.5 rounded-lg text-xs font-extrabold bg-amber-400 text-slate-950 transition';
+        btnFarm.className = 'py-1.5 rounded-lg text-xs font-bold text-slate-300 transition';
+      } else {
+        btnFarm.className = 'py-1.5 rounded-lg text-xs font-extrabold bg-emerald-400 text-slate-950 transition';
+        btnSc.className = 'py-1.5 rounded-lg text-xs font-bold text-slate-300 transition';
+      }
+      renderLeaderboard();
+    }
+
+    function renderLeaderboard() {
+      const list = document.getElementById('leaderboard-list');
+      if (!list) return;
+      const lang = state.lang;
+      const players = getAllLeaderboardPlayers().sort((a, b) => {
+        if (leaderboardSortMode === 'farm') {
+          return (b.farmLvl * 10000 + b.farmXp) - (a.farmLvl * 10000 + a.farmXp);
+        }
+        return b.balance - a.balance;
+      });
+
+      list.innerHTML = players.map((pl, idx) => {
+        const rankBadge = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+        const ringObj = AVATAR_RINGS[pl.ring] || AVATAR_RINGS.standard;
+        const metricTxt = leaderboardSortMode === 'farm'
+          ? `Lvl ${pl.farmLvl}`
+          : `${pl.balance} SC`;
+        const metricCls = leaderboardSortMode === 'farm' ? 'text-emerald-300' : 'text-amber-300';
+        const avatarInner = pl.avatarUrl
+          ? `<img src="${pl.avatarUrl}" class="w-full h-full object-cover" />`
+          : pl.name.slice(0, 2).toUpperCase();
+
+        return `
+          <div onclick="openPublicPlayerProfile('${pl.id}')"
+            class="cursor-pointer tg-elevated hover:bg-orange-950/60 rounded-2xl p-2.5 flex items-center justify-between gap-2.5 transition active:scale-[0.98] ${pl.isMe ? 'border-amber-400/50' : ''}">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-6 text-center font-mono font-black text-xs text-orange-200/80 shrink-0">${rankBadge}</span>
+              <div class="w-10 h-10 rounded-full ${ringObj.cls} shrink-0">
+                <div class="avatar-core w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-xs font-black text-white">
+                  ${avatarInner}
+                </div>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-xs font-extrabold text-white truncate">${pl.name}</span>
+                  ${getRandom18BadgeSVG(pl.badge, 'w-4 h-4')}
+                  ${pl.vip ? '<span class="text-[9px] font-black bg-amber-400 text-slate-950 px-1 rounded">VIP</span>' : ''}
+                </div>
+                <div class="text-[10px] font-mono text-orange-200/70 truncate">${pl.clanTag} • ${pl.handle}</div>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-mono font-black text-xs ${metricCls}">${metricTxt}</div>
+              <div class="text-[10px] text-orange-200/75">❤️ ${pl.rep}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openPublicPlayerProfile(playerId) {
+      if (playerId === 'me') {
+        closeModal('leaderboard-modal');
+        return switchTab('profile');
+      }
+      const pl = COMMUNITY_PLAYERS.find(p => p.id === playerId);
+      if (!pl) return;
+      haptic('light');
+      const lang = state.lang;
+      const ringObj = AVATAR_RINGS[pl.ring] || AVATAR_RINGS.standard;
+
+      document.getElementById('pub-cover-box').className = `h-24 w-full relative ${pl.cover || 'cover-midnight'}`;
+      const vipTag = document.getElementById('pub-vip-tag');
+      if (pl.vip) vipTag.classList.remove('hidden');
+      else vipTag.classList.add('hidden');
+
+      const bioText = lang === 'ru' ? pl.bioRu : pl.bioUa;
+      const showcaseHtml = pl.showcase.map(bId => {
+        const bObj = RANDOM18_BADGES.find(b => b.id === bId) || RANDOM18_BADGES[0];
+        return `
+          <div class="tg-elevated rounded-xl p-2 flex flex-col items-center text-center">
+            ${getRandom18BadgeSVG(bObj.id, 'w-6 h-6')}
+            <span class="text-[9px] font-bold text-orange-200 mt-1 truncate w-full">${bObj[lang]}</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('pub-profile-body').innerHTML = `
+        <div class="flex items-end justify-between">
+          <div class="w-18 h-18 rounded-full ${ringObj.cls} shadow-lg" style="width:72px;height:72px;">
+            <div class="avatar-core w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-xl font-black text-white">
+              ${pl.name.slice(0, 2).toUpperCase()}
+            </div>
+          </div>
+          <button onclick="likePublicPlayer('${pl.id}')" class="px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-400/35 text-rose-200 text-xs font-extrabold active:scale-90 transition shadow">
+            ❤️ <span id="pub-rep-count">${pl.rep}</span>
+          </button>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h4 class="text-base font-black text-white">${pl.name}</h4>
+            ${getRandom18BadgeSVG(pl.badge, 'w-5 h-5')}
+          </div>
+          <div class="flex items-center gap-2 mt-0.5">
+            <span class="text-xs font-mono text-orange-200/70">${pl.handle}</span>
+            <span class="text-[10px] font-mono font-extrabold text-amber-300 bg-amber-500/15 border border-amber-400/30 px-1.5 py-0.5 rounded">${pl.clanTag}</span>
+          </div>
+        </div>
+
+        <div class="tg-elevated rounded-xl p-2.5 text-xs text-orange-100">${bioText}</div>
+
+        <div class="grid grid-cols-3 gap-2">${showcaseHtml}</div>
+
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="tg-elevated rounded-xl p-2.5">
+            <div class="text-[10px] text-orange-200/70">${tr('stat_sc_lbl')}</div>
+            <div class="font-mono font-black text-amber-400 mt-0.5">${pl.balance} SC</div>
+          </div>
+          <div class="tg-elevated rounded-xl p-2.5">
+            <div class="text-[10px] text-orange-200/70">${tr('stat_farm_lbl')}</div>
+            <div class="font-mono font-black text-emerald-400 mt-0.5">Lvl ${pl.farmLvl}</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('public-profile-modal').classList.remove('hidden');
+    }
+
+    function likePublicPlayer(playerId) {
+      const pl = COMMUNITY_PLAYERS.find(p => p.id === playerId);
+      if (!pl) return;
+      if (pl.likedByMe) {
+        return showToast(state.lang === 'ru' ? '❤️ Вы уже оценили этого игрока' : '❤️ Ви вже оцінили цього гравця', 'info');
+      }
+      pl.likedByMe = true;
+      pl.rep += 1;
+      const el = document.getElementById('pub-rep-count');
+      if (el) el.textContent = pl.rep;
+      renderLeaderboard();
+      haptic('success');
+      showToast('❤️ +1!', 'success');
+    }
+
+    function getReferralLink() {
+      const uid = state.userId || 777412;
+      return `https://t.me/sqwizzy_bot?start=ref_${uid}`;
+    }
+
+    function openReferralModal() {
+      haptic('light');
+      const refs = state.referrals || { count: 2, earnedSc: 200 };
+      document.getElementById('ref-count-val').textContent = refs.count;
+      document.getElementById('ref-earned-val').textContent = `${refs.earnedSc} SC`;
+      document.getElementById('ref-link-text').textContent = getReferralLink();
+      document.getElementById('referral-modal').classList.remove('hidden');
+    }
+
+    function copyReferralLink() {
+      const link = getReferralLink();
+      const ta = document.createElement('textarea');
+      ta.value = link;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      haptic('success');
+      showToast(state.lang === 'ru' ? '📋 Реферальная ссылка скопирована!' : '📋 Реферальне посилання скопійовано!', 'success');
+    }
+
+    function shareReferralTelegram() {
+      const link = encodeURIComponent(getReferralLink());
+      const msg = encodeURIComponent(
+        state.lang === 'ru'
+          ? '🍁 Залетай ко мне в Sqwizzy Bot — получи бонус +100 SC по моей ссылке!'
+          : '🍁 Залітай до мене в Sqwizzy Bot — отримай бонус +100 SC за моїм посиланням!'
+      );
+      const shareUrl = `https://t.me/share/url?url=${link}&text=${msg}`;
+      if (tg && tg.openTelegramLink) tg.openTelegramLink(shareUrl);
+      else window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    function simulateReferralJoin() {
+      if (!state.referrals) state.referrals = { count: 0, earnedSc: 0 };
+      state.referrals.count += 1;
+      state.referrals.earnedSc += 100;
+      state.balance += 100;
+      state.chips += 25;
+      logTx('Бонус за реферала', 'Бонус за реферала', '+100 SC / +25 🎰');
+      saveState();
+      openReferralModal();
+      refreshAllUI();
+      fireConfetti();
+      haptic('success');
+      showToast(
+        state.lang === 'ru'
+          ? '🎉 Друг присоединился! +100 SC и +25 🎰'
+          : '🎉 Друг приєднався! +100 SC та +25 🎰',
+        'success'
+      );
+    }
+
+    // --- AUTUMN LEAVES GENERATOR ---
+    function initAutumnLeaves() {
+      const layer = document.getElementById('autumn-leaves-layer');
+      if (!layer || layer.children.length > 0) return;
+
+      const leafColors = ['#f59e0b', '#ea580c', '#f97316', '#dc2626', '#d97706', '#b45309'];
+      const leafShapes = [
+        '<path d="M12 2 L14 8 L20 6 L17 12 L22 14 L16 17 L17 22 L12 19 L7 22 L8 17 L2 14 L7 12 L4 6 L10 8 Z"/>',
+        '<path d="M12 2 C18 6, 20 13, 12 21 C4 13, 6 6, 12 2 Z"/>'
+      ];
+
+      for (let i = 0; i < 18; i++) {
+        const leaf = document.createElement('div');
+        leaf.className = 'autumn-leaf';
+        const leftPct = Math.round((i / 18) * 96 + Math.random() * 4);
+        const durSec = (10 + Math.random() * 8).toFixed(1);
+        const delaySec = (-Math.random() * 14).toFixed(1);
+        const swayPx = Math.round((Math.random() > 0.5 ? 1 : -1) * (26 + Math.random() * 32));
+        const sizePx = Math.round(15 + Math.random() * 11);
+        const color = leafColors[i % leafColors.length];
+        const shape = leafShapes[i % leafShapes.length];
+
+        leaf.style.left = `${leftPct}%`;
+        leaf.style.setProperty('--dur', `${durSec}s`);
+        leaf.style.setProperty('--delay', `${delaySec}s`);
+        leaf.style.setProperty('--sway', `${swayPx}px`);
+        leaf.innerHTML = `<svg width="${sizePx}" height="${sizePx}" viewBox="0 0 24 24" fill="${color}" opacity="0.88">${shape}</svg>`;
+        layer.appendChild(leaf);
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 15. LIVE GAME LOOP & INIT
+    // ---------------------------------------------------------
+    let appInitialized = false;
+
+    function initSqwizzyApp() {
+      if (appInitialized) return;
+      appInitialized = true;
+
+      try {
+        initAutumnLeaves();
+        buildEuropeanWheelSVG();
+        applyLanguage();
+
+        setInterval(() => {
+          try {
+            updateHomeSection();
+            if (currentTab === 'farm') renderFarmBeds();
+          } catch (loopErr) {
+            console.error('Tick error:', loopErr);
+          }
+        }, 1000);
+      } catch (initErr) {
+        console.error('Initialization error:', initErr);
+      }
+    }
+
+    window.onload = function () {
+      initSqwizzyApp();
+    };
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initSqwizzyApp();
+    } else {
+      window.addEventListener('DOMContentLoaded', initSqwizzyApp);
+    }
+  </script>
+</body>
+</html>
